@@ -253,11 +253,7 @@ val repackNativeLibraries by tasks.registering {
 }
 
 
-// disable doclint -- the Z3 JavaDoc contains invalid HTML5.
-(tasks.javadoc.get().options as? StandardJavadocDocletOptions)?.addBooleanOption("Xdoclint:none", true)
-
-
-// add all generated files to source sets
+// add all generated files to source sets and create integration test source set
 sourceSets {
     main {
         java {
@@ -270,7 +266,46 @@ sourceSets {
             srcDirs(repackNativeLibraries.get().outputs.files)
         }
     }
+    create("it") {
+        compileClasspath += tasks.jar.get().outputs.files
+        runtimeClasspath += tasks.jar.get().outputs.files
+    }
 }
+
+
+/** Integration test implementation configuration. */
+val itImplementation: Configuration by configurations.getting {
+    extendsFrom(configurations.implementation.get())
+}
+
+/** Integration test runtime-only configuration. */
+val itRuntimeOnly: Configuration by configurations.getting {
+    extendsFrom(configurations.runtimeOnly.get())
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    itImplementation("org.junit.jupiter:junit-jupiter-api:5.5.2")
+    itRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.5.2")
+}
+
+/** Run the integration tests. These should test the final JAR instead of unpacked files. */
+val integrationTest by tasks.registering(Test::class) {
+    dependsOn(tasks.jar)
+
+    useJUnitPlatform()
+    setForkEvery(1)
+
+    testClassesDirs = sourceSets["it"].output.classesDirs
+    classpath = sourceSets["it"].runtimeClasspath
+}
+
+
+// disable doclint -- the Z3 JavaDoc contains invalid HTML5.
+(tasks.javadoc.get().options as? StandardJavadocDocletOptions)?.addBooleanOption("Xdoclint:none", true)
 
 
 // ensure correct build order
