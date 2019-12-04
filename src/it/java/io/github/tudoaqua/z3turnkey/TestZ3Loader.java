@@ -12,7 +12,7 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-package io.github.aquatudo.z3turnkey;
+package io.github.tudoaqua.z3turnkey;
 
 import com.microsoft.z3.Native;
 import org.junit.jupiter.api.Test;
