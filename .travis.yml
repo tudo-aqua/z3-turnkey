@@ -24,13 +24,13 @@ before_install:
       choco install python3
       export PYTHON_HOME="/c/$(ls /c | grep Python)"
       export PATH="$PYTHON_HOME:$PATH"
-      export
-      ls / /c /c/*
     fi
   - curl "${GRAVIS}.install-jdk-travis.sh" --output ~/.install-jdk-travis.sh
   - source ~/.install-jdk-travis.sh
 script:
   - source ~/.jdk_config
+  - echo "PATH=$PATH"
+  - python3 --version
   - ./gradlew --stacktrace --console=plain integrationTest assemble
 
 before_cache:
