@@ -34,6 +34,7 @@ before_install:
   - source ~/.install-jdk-travis.sh
 script:
   - source ~/.jdk_config
+  - export DYLD_PRINT_LIBRARIES_POST_LAUNCH=1
   - ./gradlew --stacktrace --console=plain integrationTest assemble
 
 before_cache:
