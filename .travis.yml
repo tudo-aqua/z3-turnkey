@@ -14,22 +14,15 @@ env:
     # This work around disables it before caching
     - NO_WIN_DEFENDER=$(curl "${GRAVIS}.disable-windows-defender.sh" --output .no-defender.sh && source .no-defender.sh)
   matrix:
-    - TEST_JDK="adopt@1.8"
-    - TEST_JDK="openjdk@1.9"
-    - TEST_JDK="openjdk@1.10"
-    - TEST_JDK="openjdk@1.11"
-    - TEST_JDK="openjdk@1.12"
-    - TEST_JDK="openjdk@1.13"
-    - TEST_JDK="openjdk@1.14"
+    - JDK="openjdk@1.11"
+    - JDK="openjdk@1.12"
+    - JDK="openjdk@1.13"
 
-script:
+before_install:
   - curl "${GRAVIS}.install-jdk-travis.sh" --output ~/.install-jdk-travis.sh
-  - JDK="openjdk@1.13"
   - source ~/.install-jdk-travis.sh
-  - ./gradlew --console=plain --stacktrace assemble
-  - export JDK="$TEST_JDK"
-  - source ~/.install-jdk-travis.sh
-  - ./gradlew --console=plain --stacktrace integrationTest -s
+script:
+  - ./gradlew integrationTest assemble
 
 before_cache:
   - curl "${GRAVIS}.clean_gradle_cache.sh" --output ~/.clean_gradle_cache.sh
