@@ -28,7 +28,7 @@ import kotlin.streams.toList
 
 
 plugins {
-    id("de.undercouch.download") version "4.0.2"
+    id("de.undercouch.download").version("4.0.2")
     `java-library`
     `maven-publish`
 }

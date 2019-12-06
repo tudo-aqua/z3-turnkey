@@ -12,5 +12,18 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-rootProject.name = 'z3-turnkey'
+rootProject.name = "z3-turnkey"
 
+
+plugins {
+    id("com.gradle.enterprise").version("3.1")
+}
+
+
+gradleEnterprise {
+    buildScan {
+        termsOfServiceUrl = "https://gradle.com/terms-of-service"
+        termsOfServiceAgree = "yes"
+        publishAlways()
+    }
+}
