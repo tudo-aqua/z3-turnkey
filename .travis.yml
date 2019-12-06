@@ -22,7 +22,12 @@ before_install:
   - curl "${GRAVIS}.install-jdk-travis.sh" --output ~/.install-jdk-travis.sh
   - source ~/.install-jdk-travis.sh
 install:
-  - if [ $TRAVIS_OS_NAME = 'windows' ]; then choco install python3; fi
+  - |
+  - if [ $TRAVIS_OS_NAME = 'windows' ]; then
+      choco install python3
+      export PYTHON='C:\Python3'*
+      export PATH="$PATH:$PYTHON"
+    fi
 script:
   - ./gradlew --stacktrace --console=plain integrationTest assemble
 
