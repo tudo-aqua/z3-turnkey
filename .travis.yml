@@ -24,6 +24,8 @@ before_install:
       choco install python3
       export PYTHON_HOME="/c/Python3"*
       export PATH="$PYTHON_HOME:$PATH"
+      export
+      ls / /c /c/*
     fi
   - curl "${GRAVIS}.install-jdk-travis.sh" --output ~/.install-jdk-travis.sh
   - source ~/.install-jdk-travis.sh
