@@ -71,7 +71,7 @@ final class Z3Loader {
             libZ3Out = libraryDir.resolve(getLibraryName(os, "z3"));
             libZ3Out.toFile().deleteOnExit();
 
-            libZ3JavaOut = libraryDir.resolve(getLibraryName(os, "z3Java"));
+            libZ3JavaOut = libraryDir.resolve(getLibraryName(os, "z3java"));
             libZ3JavaOut.toFile().deleteOnExit();
 
             unpackLibrary(libZ3, libZ3Out);

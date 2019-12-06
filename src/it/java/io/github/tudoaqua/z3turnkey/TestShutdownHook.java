@@ -32,7 +32,7 @@ public class TestShutdownHook {
 
     /**
      * Reflectively obtain the list of deletion-schedules files and verify that files containing {@code z3} and
-     * {@code z3Java} or {@code libz3} and {@code libz3Java} are scheduled for deletion on JVM exit after Z3 has been
+     * {@code z3java} or {@code libz3} and {@code libz3java} are scheduled for deletion on JVM exit after Z3 has been
      * invoked.
      *
      * @throws ClassNotFoundException on reflection error.
@@ -62,7 +62,7 @@ public class TestShutdownHook {
 
         assertTrue(newFiles.stream().anyMatch(file -> {
             String name = new File(file).getName();
-            return name.startsWith("z3Java.") || name.startsWith("libz3Java.");
+            return name.startsWith("z3java.") || name.startsWith("libz3java.");
         }), "Z3 java support library not scheduled for deletion " + newFiles.toString());
     }
 
