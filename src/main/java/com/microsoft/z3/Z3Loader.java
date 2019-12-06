@@ -91,15 +91,15 @@ final class Z3Loader {
         /**
          * Mac OS X.
          */
-        OS_X("osx", "dylib", true),
+        OS_X("osx", "dylib"),
         /**
          * Linux.
          **/
-        LINUX("linux", "so", true),
+        LINUX("linux", "so"),
         /**
          * Microsoft Windows.
          **/
-        WINDOWS("windows", "dll", false);
+        WINDOWS("windows", "dll");
 
         /**
          * The directory name used for the OS's libraries.
@@ -109,31 +109,16 @@ final class Z3Loader {
          * The file name extension for dynamic libraries defined by the OS.
          */
         final String libraryExtension;
-        /**
-         * {@code true} iff the OS prefixes libraries with {@code lib}.
-         */
-        final boolean hasLibraryPrefix;
 
         /**
          * Construct a new enum entry.
          *
          * @param name             the {@link #name}.
          * @param libraryExtension the {@link #libraryExtension}.
-         * @param hasLibraryPrefix the {@link #hasLibraryPrefix} value.
          */
-        OperatingSystem(final String name, final String libraryExtension, final boolean hasLibraryPrefix) {
+        OperatingSystem(final String name, final String libraryExtension) {
             this.name = name;
             this.libraryExtension = libraryExtension;
-            this.hasLibraryPrefix = hasLibraryPrefix;
-        }
-
-        /**
-         * Get the library prefix as a string.
-         *
-         * @return {@code "lib"} iff {@link #hasLibraryPrefix}, else {@code ""}.
-         */
-        String libraryPrefix() {
-            return this.hasLibraryPrefix ? "lib" : "";
         }
 
         /**
@@ -220,7 +205,7 @@ final class Z3Loader {
      * @return the expected name of the library for the OS.
      */
     private static String getLibraryName(final OperatingSystem os, final String library) {
-        return os.libraryPrefix() + library + "." + os.libraryExtension;
+        return "lib" + library + "." + os.libraryExtension;
     }
 
     /**

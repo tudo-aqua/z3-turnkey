@@ -61,21 +61,15 @@ buildscript {
  * @param os the operating system name used in the final distribution.
  * @param architecture the CPU architecture name used in the final distribution.
  * @param extension the library file name extension used by the OS.
- * @param hasLibPrefix `true` iff the OS prefixes libraries with `lib`.
  * */
-data class OSData(val os: String, val architecture: String, val extension: String, val hasLibPrefix: Boolean = true) {
-    /**
-     * The library prefix as a string. `"lib"` iff [hasLibPrefix], else `""`.
-     */
-    val libPrefix = if (hasLibPrefix) "lib" else ""
-}
+data class OSData(val os: String, val architecture: String, val extension: String)
 
 /** The OS-CPU combinations Z3 distributions are available for. */
 val z3Architectures = mapOf(
     "x64-osx-10.14.6" to OSData("osx", "amd64", "dylib"),
     "x64-ubuntu-16.04" to OSData("linux", "amd64", "so"),
-    "x64-win" to OSData("windows", "amd64", "dll", false),
-    "x86-win" to OSData("windows", "x86", "dll", false)
+    "x64-win" to OSData("windows", "amd64", "dll"),
+    "x86-win" to OSData("windows", "x86", "dll")
 )
 
 
@@ -244,7 +238,6 @@ val repackNativeLibraries by tasks.registering {
                         input.resolve("z3-$version-$arch").resolve("bin")
                             .resolve("lib$library.${osData.extension}")
                     )
-                    rename { "${osData.libPrefix}$library.${osData.extension}" }
                     into(output.resolve("native").resolve("${osData.os}-${osData.architecture}"))
                 }
             }
