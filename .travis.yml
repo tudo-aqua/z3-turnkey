@@ -14,15 +14,15 @@ env:
     # This work around disables it before caching
     - NO_WIN_DEFENDER=$(curl "${GRAVIS}.disable-windows-defender.sh" --output .no-defender.sh && source .no-defender.sh)
   matrix:
-    - JDK="openjdk@1.11"
-    - JDK="openjdk@1.12"
+    #- JDK="openjdk@1.11"
+    #- JDK="openjdk@1.12"
     - JDK="openjdk@1.13"
 
 before_install:
   - |
     if [ $TRAVIS_OS_NAME = 'windows' ]; then
       choco install python3
-      export PYTHON_HOME="/c/Python3"*
+      export PYTHON_HOME="/c/$(ls /c | grep Python)"
       export PATH="$PYTHON_HOME:$PATH"
       export
       ls / /c /c/*
