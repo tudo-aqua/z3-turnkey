@@ -22,11 +22,15 @@ env:
     - JDK="openjdk@1.13"
     - JDK="openjdk@1.14"
 
-before_install:
-  - curl "${GRAVIS}.install-jdk-travis.sh" --output ~/.install-jdk-travis.sh
-  - source ~/.install-jdk-travis.sh
 script:
-  - ./gradlew integrationTest assemble -s
+  - curl "${GRAVIS}.install-jdk-travis.sh" --output ~/.install-jdk-travis.sh
+  - export TEST_JDK="$JDK"
+  - JDK="openjdk@1.13"
+  - source ~/.install-jdk-travis.sh
+  - ./gradlew assemble -s
+  - export JDK="$TEST_JDK"
+  - source ~/.install-jdk-travis.sh
+  - ./gradlew integrationTest -s
 
 before_cache:
   - curl "${GRAVIS}.clean_gradle_cache.sh" --output ~/.clean_gradle_cache.sh
