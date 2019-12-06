@@ -275,7 +275,7 @@ final class Z3Loader {
     private static void fixInstallName(final Path libZ3Java, final Path libZ3) throws IOException {
         try {
             new ProcessBuilder("install_name_tool",
-                    "-change", "libz3.dylib", libZ3.toAbsolutePath().toString(), "@executable_path/libz3.dylib")
+                    "-change", "libz3.dylib", libZ3.toAbsolutePath().toString(), "@loader_path/libz3.dylib")
                     .inheritIO()
                     .start()
                     .waitFor();
