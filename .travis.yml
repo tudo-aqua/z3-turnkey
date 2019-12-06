@@ -22,7 +22,7 @@ before_install:
   - curl "${GRAVIS}.install-jdk-travis.sh" --output ~/.install-jdk-travis.sh
   - source ~/.install-jdk-travis.sh
 script:
-  - ./gradlew integrationTest assemble
+  - ./gradlew --stacktrace --console=plain integrationTest assemble
 
 before_cache:
   - curl "${GRAVIS}.clean_gradle_cache.sh" --output ~/.clean_gradle_cache.sh
