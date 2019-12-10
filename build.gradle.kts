@@ -20,6 +20,9 @@ import com.github.javaparser.ast.stmt.BlockStmt
 import com.github.javaparser.ast.stmt.ExpressionStmt
 import de.undercouch.gradle.tasks.download.Download
 import org.gradle.api.JavaVersion.VERSION_1_8
+import org.gradle.process.internal.ExecException
+import java.io.ByteArrayOutputStream
+import java.io.IOException
 import java.nio.file.Files.createDirectories
 import java.nio.file.Files.list
 import java.nio.file.Files.writeString
@@ -46,6 +49,58 @@ java {
 }
 
 
+class ExecResult(
+    val executed: Boolean, exitValue: Int?,
+    val standardOutput: ByteArray, val standardError: ByteArray
+) {
+    val successful = executed && exitValue == 0
+}
+
+
+fun execCommand(vararg commands: String): ExecResult {
+    val stdOut = ByteArrayOutputStream()
+    val stdErr = ByteArrayOutputStream()
+    val (executed, exitValue) = try {
+        true to exec {
+            commandLine = listOf(*commands)
+            isIgnoreExitValue = true
+            standardOutput = stdOut
+            errorOutput = stdErr
+        }.exitValue
+    } catch (_: ExecException) {
+        false to null
+    }
+    return ExecResult(executed, exitValue, stdOut.toByteArray(), stdErr.toByteArray())
+}
+
+
+val python3: String by lazy {
+    (properties["python"] as? String)?.let { return@lazy it }
+
+    listOf("python", "python3").forEach {
+        val result = execCommand(it, "--version")
+        if (result.successful && String(result.standardOutput).startsWith("Python 3.")) {
+            return@lazy it
+        }
+    }
+
+    throw GradleException("No Python 3 defined or found on the search path")
+}
+
+
+val installNameTool: String by lazy {
+    (properties["install_name_tool"] as? String)?.let { return@lazy it }
+
+    listOf("install_name_tool", "x86_64-apple-darwin-install_name_tool").forEach {
+        if (execCommand(it).executed) {
+            return@lazy it
+        }
+    }
+
+    throw GradleException("No install_name_tool defined or found on the search path")
+}
+
+
 buildscript {
     repositories {
         mavenCentral()
@@ -61,7 +116,7 @@ buildscript {
  * @param os the operating system name used in the final distribution.
  * @param architecture the CPU architecture name used in the final distribution.
  * @param extension the library file name extension used by the OS.
- * */
+ */
 data class OSData(val os: String, val architecture: String, val extension: String)
 
 /** The OS-CPU combinations Z3 distributions are available for. */
@@ -89,45 +144,27 @@ val z3Package = "com.microsoft.z3"
 val z3PackagePath = packageToPath(z3Package)
 
 
-/**
- * Download all architecture-specific distrubutions of Z3 + the source ZIP from GitHub.
- */
-val downloadZ3 by tasks.registering(Download::class) {
-    src(z3Architectures.keys.map { "https://github.com/Z3Prover/z3/releases/download/z3-$version/z3-$version-$it.zip" })
+val downloadZ3Source by tasks.registering(Download::class) {
+    description = "Download the Z3 source archive."
     src("https://github.com/Z3Prover/z3/archive/z3-$version/z3-$version.zip")
-    dest(buildDir.toPath().resolve("archives").toFile())
+    dest(buildDir.toPath().resolve("source-archive").resolve("z3-$version.zip").toFile())
     overwrite(false)
 }
 
 
-/**
- * Extract the Z3 source ZIP.
- */
-val extractZ3SourceZIP by tasks.registering(Copy::class) {
-    dependsOn(downloadZ3)
-    from(zipTree(downloadZ3.get().dest.toPath().resolve("z3-$version.zip")))
-    into(buildDir.toPath().resolve("unpacked-source-archive"))
+val extractZ3Source by tasks.registering(Copy::class) {
+    description = "Extract the Z3 source archive."
+    dependsOn(downloadZ3Source)
+    from(zipTree(downloadZ3Source.get().dest))
+    into(buildDir.toPath().resolve("unpacked-source"))
 }
 
 
-/**
- * Extract the Z3 binary distributions.
- */
-val extractZ3BinaryZIPs by tasks.registering(Copy::class) {
-    dependsOn(downloadZ3)
-    from(z3Architectures.keys.map { zipTree(downloadZ3.get().dest.toPath().resolve("z3-$version-$it.zip")) })
-    into(buildDir.toPath().resolve("unpacked-binary-archives"))
-}
-
-
-/**
- * Copy the non-generated Z3 Java sources (i.e., the object-oriented API by Christoph M. Wintersteiger) to an
- * appropriate directory.
- */
 val copyNonGeneratedSources by tasks.registering {
-    dependsOn(extractZ3SourceZIP)
+    description = "Copy the non-generated Z3 Java sources to the correct directory structure."
+    dependsOn(extractZ3Source)
 
-    val sourceDir = extractZ3SourceZIP.get().destinationDir.toPath().resolve("z3-z3-$version")
+    val sourceDir = extractZ3Source.get().destinationDir.toPath().resolve("z3-z3-$version")
     val output = buildDir.toPath().resolve("non-generated-sources")
 
     inputs.dir(sourceDir)
@@ -151,9 +188,9 @@ val copyNonGeneratedSources by tasks.registering {
  * generated ahead of time.
  */
 fun Task.z3GeneratorScript(scriptName: String, outputName: String, realOutputPackage: String) {
-    dependsOn(extractZ3SourceZIP)
+    dependsOn(extractZ3Source)
 
-    val sourceDir = extractZ3SourceZIP.get().destinationDir.toPath().resolve("z3-z3-$version")
+    val sourceDir = extractZ3Source.get().destinationDir.toPath().resolve("z3-z3-$version")
     val output = buildDir.toPath().resolve(outputName)
 
     inputs.dir(sourceDir)
@@ -173,29 +210,26 @@ fun Task.z3GeneratorScript(scriptName: String, outputName: String, realOutputPac
 
         createDirectories(output.resolve(packageToPath(realOutputPackage)))
         exec {
-            commandLine = listOf("python3", "-B", scriptDir.resolve("$scriptName.py").toString()) + generatorOptions
+            commandLine = listOf(python3, "-B", scriptDir.resolve("$scriptName.py").toString()) + generatorOptions
         }
     }
 }
 
 
-/** Invoke the Z3 enumeration generator script. */
 val mkConstsFiles by tasks.registering {
+    description = "Generate the Java source for Z3 enumerations."
     z3GeneratorScript("mk_consts_files", "generated-enumerations", "$z3Package.enumerations")
 }
 
 
-/** Invoke the Z3 native binding generator script. */
 val updateAPI by tasks.registering {
+    description = "Generate the Java source for the Z3 native binding."
     z3GeneratorScript("update_api", "generated-native", z3Package)
 }
 
 
-/**
- * Rewrite the Z3 native binding to use our unpack-and-link code. This replaces the static initializer by a call to
- * the `Z3Loader` class provided in this project.
- */
-val rewriteNative by tasks.registering {
+val rewriteNativeJava by tasks.registering {
+    description = "Rewrite the Z3 native binding to use the new unpack-and-link code."
     dependsOn(updateAPI)
 
     val input = updateAPI.get().outputs.files.singleFile.toPath()
@@ -221,24 +255,47 @@ val rewriteNative by tasks.registering {
 }
 
 
-/** Copy the Z3 native libraries to the correct directories. */
-val repackNativeLibraries by tasks.registering {
-    dependsOn(extractZ3BinaryZIPs)
+z3Architectures.forEach { (arch, osData) ->
+    tasks.register("downloadZ3Binary-$arch", Download::class) {
+        description = "Download the Z3 binary distribution for $arch."
+        src("https://github.com/Z3Prover/z3/releases/download/z3-$version/z3-$version-$arch.zip")
+        dest(buildDir.toPath().resolve("binary-archives").resolve("z3-$version-$arch.zip").toFile())
+        overwrite(false)
+    }
 
-    val input = extractZ3BinaryZIPs.get().outputs.files.singleFile.toPath()
-    inputs.dir(input)
+    tasks.register("extractZ3Binary-$arch", Copy::class) {
+        description = "Extract the Z3 binary distribution for $arch."
+        dependsOn("downloadZ3Binary-$arch")
+        from(zipTree(tasks.named("downloadZ3Binary-$arch", Download::class).get().dest))
+        into(buildDir.toPath().resolve("unpacked-binaries-$arch"))
+    }
 
-    val output = buildDir.toPath().resolve("native-libraries")
-    outputs.dir(output)
-    doLast {
-        listOf("z3", "z3java").forEach { library ->
-            z3Architectures.forEach { (arch, osData) ->
+    tasks.register("copyNativeLibraries-$arch") {
+        description = "Copy the Z3 native libraries for $arch to the correct directory layout" +
+                "${if (osData.os == "osx") " and fix the library search path" else ""}."
+        dependsOn("extractZ3Binary-$arch")
+
+        val input = tasks.named("extractZ3Binary-$arch").get().outputs.files.singleFile.toPath()
+        inputs.dir(input)
+
+        val output = buildDir.toPath().resolve("native-libraries-$arch")
+        outputs.dir(output)
+        doLast {
+            listOf("z3", "z3java").forEach { library ->
                 copy {
-                    from(
-                        input.resolve("z3-$version-$arch").resolve("bin")
-                            .resolve("lib$library.${osData.extension}")
-                    )
+                    from(input.resolve("z3-$version-$arch").resolve("bin").resolve("lib$library.${osData.extension}"))
                     into(output.resolve("native").resolve("${osData.os}-${osData.architecture}"))
+                }
+            }
+            if (osData.os == "osx") {
+                exec {
+                    commandLine = listOf(
+                        installNameTool,
+                        "-change", "libz3.${osData.extension}", "@loader_path/libz3.${osData.extension}",
+                        output.resolve("native")
+                            .resolve("${osData.os}-${osData.architecture}")
+                            .resolve("libz3java.${osData.extension}").toAbsolutePath().toString()
+                    )
                 }
             }
         }
@@ -251,15 +308,18 @@ sourceSets {
     main {
         java {
             srcDirs(
-                *listOf(copyNonGeneratedSources, mkConstsFiles, rewriteNative)
+                *listOf(copyNonGeneratedSources, mkConstsFiles, rewriteNativeJava)
                     .map { it.get().outputs.files }.toTypedArray()
             )
         }
         resources {
-            srcDirs(repackNativeLibraries.get().outputs.files)
+            srcDirs(
+                *z3Architectures.keys
+                    .map { tasks.named("copyNativeLibraries-$it").get().outputs.files }.toTypedArray()
+            )
         }
     }
-    create("it") {
+    create("integrationTest") {
         compileClasspath += tasks.jar.get().outputs.files
         runtimeClasspath += tasks.jar.get().outputs.files
     }
@@ -267,12 +327,12 @@ sourceSets {
 
 
 /** Integration test implementation configuration. */
-val itImplementation: Configuration by configurations.getting {
+val integrationTestImplementation: Configuration by configurations.getting {
     extendsFrom(configurations.implementation.get())
 }
 
 /** Integration test runtime-only configuration. */
-val itRuntimeOnly: Configuration by configurations.getting {
+val integrationTestRuntimeOnly: Configuration by configurations.getting {
     extendsFrom(configurations.runtimeOnly.get())
 }
 
@@ -281,19 +341,19 @@ repositories {
 }
 
 dependencies {
-    itImplementation("org.junit.jupiter:junit-jupiter-api:5.5.2")
-    itRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.5.2")
+    integrationTestImplementation("org.junit.jupiter:junit-jupiter-api:5.5.2")
+    integrationTestRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.5.2")
 }
 
-/** Run the integration tests. These should test the final JAR instead of unpacked files. */
 val integrationTest by tasks.registering(Test::class) {
+    description = "Run the integration tests against the final JAR."
     dependsOn(tasks.jar)
 
     useJUnitPlatform()
     setForkEvery(1)
 
-    testClassesDirs = sourceSets["it"].output.classesDirs
-    classpath = sourceSets["it"].runtimeClasspath
+    testClassesDirs = sourceSets["integrationTest"].output.classesDirs
+    classpath = sourceSets["integrationTest"].runtimeClasspath
 }
 
 
@@ -302,8 +362,9 @@ val integrationTest by tasks.registering(Test::class) {
 
 
 // ensure correct build order
-tasks.compileJava.get().dependsOn(copyNonGeneratedSources, mkConstsFiles, rewriteNative)
-tasks.processResources.get().dependsOn(repackNativeLibraries)
+tasks.compileJava.get().dependsOn(copyNonGeneratedSources, mkConstsFiles, rewriteNativeJava)
+tasks.processResources.get().dependsOn(*z3Architectures.keys
+    .map { tasks.named("copyNativeLibraries-$it") }.toTypedArray())
 
 
 publishing {

@@ -76,8 +76,6 @@ final class Z3Loader {
 
             unpackLibrary(libZ3, libZ3Out);
             unpackLibrary(libZ3Java, libZ3JavaOut);
-
-            if (os == OperatingSystem.OS_X) fixInstallName(libZ3JavaOut, libZ3Out);
         } catch (IOException e) {
             throw new LinkageError("Could not unpack native libraries", e);
         }
@@ -264,24 +262,4 @@ final class Z3Loader {
             out.write(buffer, 0, read);
         }
     }
-
-    /**
-     * Rewrite the linkage specification on {@code libz3java.dylib} on OS X.
-     *
-     * @param libZ3Java the unpacked {@code libz3java}.
-     * @param libZ3     the unpacked {@code libz3}.
-     * @throws IOException if the rewrite operation fails.
-     */
-    private static void fixInstallName(final Path libZ3Java, final Path libZ3) throws IOException {
-        try {
-            new ProcessBuilder("install_name_tool",
-                    "-change", "libz3.dylib", "@loader_path/libz3.dylib", libZ3Java.toAbsolutePath().toString())
-                    .inheritIO()
-                    .start()
-                    .waitFor();
-        } catch (InterruptedException e) {
-            throw new IllegalStateException("install_name_tool was interrupted", e);
-        }
-    }
-
 }

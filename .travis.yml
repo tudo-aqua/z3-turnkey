@@ -19,23 +19,23 @@ env:
     - JDK="openjdk@1.13"
 
 before_install:
-  # Glob expansion is broken in TravisCI
-  # The Windows Python installer only creates a "python" binary
+  # Install Python on Windows. Glob expansion is broken in TravisCI.
   - |
     if [ $TRAVIS_OS_NAME = 'windows' ]; then
       choco install python3
       export PYTHON_HOME="/c/$(ls /c | grep Python)"
-      ln -s python.exe "$PYTHON_HOME/python3.exe"
       export PATH="$PYTHON_HOME:$PATH"
     fi
-  - which python3
-  - python3 --version
+  # Suppress install_name rewriting on non-OSX systems.
+  - |
+    if [ $TRAVIS_OS_NAME != 'osx' ]; then
+      echo 'export GRADLE_PARAMS="-Pinstall_name_tool=true"' >> ~/.jdk_config
+    fi
   - curl "${GRAVIS}.install-jdk-travis.sh" --output ~/.install-jdk-travis.sh
   - source ~/.install-jdk-travis.sh
 script:
   - source ~/.jdk_config
-  - export DYLD_PRINT_LIBRARIES_POST_LAUNCH=1
-  - ./gradlew --stacktrace --console=plain integrationTest assemble
+  - ./gradlew --stacktrace --console=plain $GRADLE_PARAMS integrationTest assemble
 
 before_cache:
   - curl "${GRAVIS}.clean_gradle_cache.sh" --output ~/.clean_gradle_cache.sh
