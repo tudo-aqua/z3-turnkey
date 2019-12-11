@@ -22,7 +22,6 @@ import de.undercouch.gradle.tasks.download.Download
 import org.gradle.api.JavaVersion.VERSION_1_8
 import org.gradle.process.internal.ExecException
 import java.io.ByteArrayOutputStream
-import java.io.IOException
 import java.nio.file.Files.createDirectories
 import java.nio.file.Files.list
 import java.nio.file.Files.writeString
@@ -80,9 +79,7 @@ val python3: String by lazy {
 
     listOf("python", "python3").forEach {
         val result = execCommand(it, "--version")
-        if (result.successful && String(result.standardOutput).startsWith("Python 3.")) {
-            return@lazy it
-        }
+        if (result.successful && String(result.standardOutput).startsWith("Python 3.")) return@lazy it
     }
 
     throw GradleException("No Python 3 defined or found on the search path")
@@ -93,9 +90,7 @@ val installNameTool: String by lazy {
     (properties["install_name_tool"] as? String)?.let { return@lazy it }
 
     listOf("install_name_tool", "x86_64-apple-darwin-install_name_tool").forEach {
-        if (execCommand(it).executed) {
-            return@lazy it
-        }
+        if (execCommand(it).executed) return@lazy it
     }
 
     throw GradleException("No install_name_tool defined or found on the search path")
@@ -267,7 +262,7 @@ z3Architectures.forEach { (arch, osData) ->
     tasks.register("extractZ3Binary-$arch", Copy::class) {
         description = "Extract the Z3 binary distribution for $arch."
         dependsOn("downloadZ3Binary-$arch")
-        from(zipTree(tasks.named("downloadZ3Binary-$arch", Download::class).get().dest))
+        from(zipTree(tasks.named<Download>("downloadZ3Binary-$arch").get().dest))
         into(buildDir.toPath().resolve("unpacked-binaries-$arch"))
     }
 
