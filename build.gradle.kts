@@ -372,7 +372,7 @@ publishing {
             pom {
                 name.set("Z3-TurnKey")
                 description.set(
-                    "Aself-unpacking, standalone Z3 distribution that ships all required native support " +
+                    "A self-unpacking, standalone Z3 distribution that ships all required native support " +
                             "code and automatically unpacks it at runtime."
                 )
                 url.set("https://github.com/tudo-aqua/z3-turnkey")
