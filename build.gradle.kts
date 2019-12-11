@@ -34,6 +34,7 @@ plugins {
     id("de.undercouch.download").version("4.0.2")
     `java-library`
     `maven-publish`
+    signing
 }
 
 
@@ -363,14 +364,64 @@ val integrationTest by tasks.registering(Test::class) {
 
 // ensure correct build order
 tasks.compileJava.get().dependsOn(copyNonGeneratedSources, mkConstsFiles, rewriteNativeJava)
-tasks.processResources.get().dependsOn(*z3Architectures.keys
-    .map { tasks.named("copyNativeLibraries-$it") }.toTypedArray())
+tasks.processResources.get().dependsOn(
+    *z3Architectures.keys
+        .map { tasks.named("copyNativeLibraries-$it") }.toTypedArray()
+)
 
 
 publishing {
     publications {
         create<MavenPublication>("maven") {
             from(components["java"])
+            pom {
+                name.set("Z3-TurnKey")
+                description.set(
+                    "Aself-unpacking, standalone Z3 distribution that ships all required native support " +
+                            "code and automatically unpacks it at runtime."
+                )
+                url.set("https://github.com/tudo-aqua/z3-turnkey")
+                licenses {
+                    license {
+                        name.set("The MIT License")
+                        url.set("https://opensource.org/licenses/MIT")
+                    }
+                    license {
+                        name.set("ISC License")
+                        url.set("https://opensource.org/licenses/ISC")
+                    }
+                }
+                developers {
+                    developer {
+                        name.set("Simon Dierl")
+                        email.set("simon.dierl@cs.tu-dortmund.de")
+                    }
+                }
+                scm {
+                    connection.set("scm:git:git://github.com:tudo-aqua/z3-turnkey.git")
+                    developerConnection.set("scm:git:ssh://git@github.com:tudo-aqua/z3-turnkey.git")
+                    url.set("https://github.com/tudo-aqua/z3-turnkey/tree/master")
+                }
+            }
         }
     }
+    repositories {
+        maven {
+            name = "nexusOSS"
+            val releasesUrl = uri("https://oss.sonatype.org/service/local/staging/deploy/maven2/")
+            val snapshotsUrl = uri("https://oss.sonatype.org/content/repositories/snapshots/")
+            url = if (version.toString().endsWith("SNAPSHOT")) snapshotsUrl else releasesUrl
+            credentials {
+                username = properties["nexusUsername"] as? String
+                password = properties["nexusPassword"] as? String
+            }
+        }
+    }
+}
+
+
+signing {
+    isRequired = !hasProperty("skip-signing")
+    useGpgCmd()
+    sign(publishing.publications["maven"])
 }

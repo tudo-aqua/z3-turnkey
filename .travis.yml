@@ -35,7 +35,7 @@ before_install:
   - source ~/.install-jdk-travis.sh
 script:
   - source ~/.jdk_config
-  - ./gradlew --stacktrace --console=plain $GRADLE_PARAMS integrationTest assemble
+  - ./gradlew --stacktrace --console=plain -Pskip-signing $GRADLE_PARAMS integrationTest assemble
 
 before_cache:
   - curl "${GRAVIS}.clean_gradle_cache.sh" --output ~/.clean_gradle_cache.sh
