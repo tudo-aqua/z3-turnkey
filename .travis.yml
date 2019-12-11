@@ -14,8 +14,7 @@ env:
     # This work around disables it before caching
     - NO_WIN_DEFENDER=$(curl "${GRAVIS}.disable-windows-defender.sh" --output .no-defender.sh && source .no-defender.sh)
   matrix:
-    #- JDK="openjdk@1.11"
-    #- JDK="openjdk@1.12"
+    - JDK="openjdk@1.11"
     - JDK="openjdk@1.13"
 
 before_install:
