@@ -1,5 +1,5 @@
-![Travis (.org)](https://img.shields.io/travis/tudo-aqua/z3-turnkey)
-![Maven Central](https://img.shields.io/maven-central/v/io.github.tudo-aqua/z3-turnkey)
+[![Travis (.org)](https://img.shields.io/travis/tudo-aqua/z3-turnkey)](https://travis-ci.com/tudo-aqua/z3-turnkey)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.tudo-aqua/z3-turnkey)](https://search.maven.org/artifact/io.github.tudo-aqua/z3-turnkey)
 
 ### The Z3-TurnKey distribution
 
@@ -33,8 +33,8 @@ Also, JavaDoc and source JARs are generated for ease of use.
 
 #### Building
 
-The project is built using [Gradle](https://gradle.org/). In addition to Java 11 or higher, it requires Python 3, an
-`install_name_tool` for OS X and a GPG signature key.
+The project is built using [Gradle](https://gradle.org/). In addition to Java 11 or higher, building requires Python 3,
+an `install_name_tool` for OS X and a GPG signature key.
 
 The project can be built and tested on the current platform using:
 > ./gradlew assemble integrationTest
