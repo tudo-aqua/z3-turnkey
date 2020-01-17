@@ -20,7 +20,6 @@ import java.io.OutputStream;
 import java.nio.file.Path;
 
 import static java.lang.System.getProperty;
-import static java.lang.Thread.currentThread;
 import static java.nio.file.Files.createTempDirectory;
 import static java.nio.file.Files.newOutputStream;
 
@@ -56,10 +55,10 @@ final class Z3Loader {
     static void loadZ3() {
         final OperatingSystem os = OperatingSystem.identify();
         final CPUArchitecture cpu = CPUArchitecture.identify();
-        final ClassLoader cl = currentThread().getContextClassLoader();
+        final Class<Z3Loader> clazz = Z3Loader.class;
 
-        final InputStream libZ3 = cl.getResourceAsStream(getLibraryPath(os, cpu, "z3"));
-        final InputStream libZ3Java = cl.getResourceAsStream(getLibraryPath(os, cpu, "z3java"));
+        final InputStream libZ3 = clazz.getResourceAsStream(getLibraryPath(os, cpu, "z3"));
+        final InputStream libZ3Java = clazz.getResourceAsStream(getLibraryPath(os, cpu, "z3java"));
         assertLibrariesFound(libZ3, libZ3Java, os, cpu);
 
         final Path libZ3Out;
@@ -195,7 +194,7 @@ final class Z3Loader {
      * @return the expected location of the library for the OS-architecture-combination.
      */
     private static String getLibraryPath(final OperatingSystem os, final CPUArchitecture cpu, final String library) {
-        return "native/" + os.name + "-" + cpu.name + "/" + getLibraryName(os, library);
+        return "/native/" + os.name + "-" + cpu.name + "/" + getLibraryName(os, library);
     }
 
     /**
