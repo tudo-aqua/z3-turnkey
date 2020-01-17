@@ -356,6 +356,15 @@ val integrationTest by tasks.registering(Test::class) {
 }
 
 
+val integrationTestJar by tasks.registering(Jar::class) {
+    description = "Package the integration tests into a JAR for standalone execution."
+    dependsOn(tasks["integrationTestClasses"])
+
+    archiveClassifier.set("integration-tests")
+    from(sourceSets["integrationTest"].output.classesDirs)
+}
+
+
 // disable doclint -- the Z3 JavaDoc contains invalid HTML5.
 (tasks.javadoc.get().options as? StandardJavadocDocletOptions)?.addBooleanOption("Xdoclint:none", true)
 
