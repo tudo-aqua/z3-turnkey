@@ -38,7 +38,10 @@ plugins {
 
 
 group = "io.github.tudo-aqua"
-version = "4.8.7"
+
+val z3Version = "4.8.7"
+val turnkeyVersion = ""
+version = "$z3Version$turnkeyVersion"
 
 
 java {
@@ -142,8 +145,8 @@ val z3PackagePath = packageToPath(z3Package)
 
 val downloadZ3Source by tasks.registering(Download::class) {
     description = "Download the Z3 source archive."
-    src("https://github.com/Z3Prover/z3/archive/z3-$version/z3-$version.zip")
-    dest(buildDir.toPath().resolve("source-archive").resolve("z3-$version.zip").toFile())
+    src("https://github.com/Z3Prover/z3/archive/z3-$z3Version/z3-$z3Version.zip")
+    dest(buildDir.toPath().resolve("source-archive").resolve("z3-$z3Version.zip").toFile())
     overwrite(false)
 }
 
@@ -160,7 +163,7 @@ val copyNonGeneratedSources by tasks.registering {
     description = "Copy the non-generated Z3 Java sources to the correct directory structure."
     dependsOn(extractZ3Source)
 
-    val sourceDir = extractZ3Source.get().destinationDir.toPath().resolve("z3-z3-$version")
+    val sourceDir = extractZ3Source.get().destinationDir.toPath().resolve("z3-z3-$z3Version")
     val output = buildDir.toPath().resolve("non-generated-sources")
 
     inputs.dir(sourceDir)
@@ -186,7 +189,7 @@ val copyNonGeneratedSources by tasks.registering {
 fun Task.z3GeneratorScript(scriptName: String, outputName: String, realOutputPackage: String) {
     dependsOn(extractZ3Source)
 
-    val sourceDir = extractZ3Source.get().destinationDir.toPath().resolve("z3-z3-$version")
+    val sourceDir = extractZ3Source.get().destinationDir.toPath().resolve("z3-z3-$z3Version")
     val output = buildDir.toPath().resolve(outputName)
 
     inputs.dir(sourceDir)
@@ -254,8 +257,8 @@ val rewriteNativeJava by tasks.registering {
 z3Architectures.forEach { (arch, osData) ->
     tasks.register("downloadZ3Binary-$arch", Download::class) {
         description = "Download the Z3 binary distribution for $arch."
-        src("https://github.com/Z3Prover/z3/releases/download/z3-$version/z3-$version-$arch.zip")
-        dest(buildDir.toPath().resolve("binary-archives").resolve("z3-$version-$arch.zip").toFile())
+        src("https://github.com/Z3Prover/z3/releases/download/z3-$z3Version/z3-$z3Version-$arch.zip")
+        dest(buildDir.toPath().resolve("binary-archives").resolve("z3-$z3Version-$arch.zip").toFile())
         overwrite(false)
     }
 
@@ -279,7 +282,7 @@ z3Architectures.forEach { (arch, osData) ->
         doLast {
             listOf("z3", "z3java").forEach { library ->
                 copy {
-                    from(input.resolve("z3-$version-$arch").resolve("bin").resolve("lib$library.${osData.extension}"))
+                    from(input.resolve("z3-$z3Version-$arch").resolve("bin").resolve("lib$library.${osData.extension}"))
                     into(output.resolve("native").resolve("${osData.os}-${osData.architecture}"))
                 }
             }
