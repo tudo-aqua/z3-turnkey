@@ -40,7 +40,7 @@ plugins {
 group = "io.github.tudo-aqua"
 
 val z3Version = "4.8.7"
-val turnkeyVersion = ""
+val turnkeyVersion = ".1"
 version = "$z3Version$turnkeyVersion"
 
 
