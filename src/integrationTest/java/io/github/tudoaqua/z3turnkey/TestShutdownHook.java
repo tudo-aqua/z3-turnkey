@@ -51,19 +51,23 @@ public class TestShutdownHook {
 
         Native.getFullVersion();
 
-        @SuppressWarnings("unchecked") final Set<String> newFiles =
+        @SuppressWarnings("unchecked") final Set<String> after =
                 new HashSet<String>((Collection<String>) files.get(null));
+        HashSet<String> newFiles = new HashSet<>(after);
         newFiles.removeAll(before);
+
 
         assertTrue(newFiles.stream().anyMatch(file -> {
             String name = new File(file).getName();
             return name.startsWith("z3.") || name.startsWith("libz3.");
-        }), "Z3 library not scheduled for deletion");
+        }), "Z3 library not scheduled for deletion " +
+                "(before = " + before + ", after = " + after + ", new = " + newFiles + ")");
 
         assertTrue(newFiles.stream().anyMatch(file -> {
             String name = new File(file).getName();
             return name.startsWith("z3java.") || name.startsWith("libz3java.");
-        }), "Z3 java support library not scheduled for deletion " + newFiles.toString());
+        }), "Z3 java support library not scheduled for deletion " +
+                "(before = " + before + ", after = " + after + ", new = " + newFiles + ")");
     }
 
 }
