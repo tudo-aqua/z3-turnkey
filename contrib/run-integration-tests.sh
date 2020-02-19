@@ -21,7 +21,7 @@ windows-latest)
 esac
 JABBA_GITHUB="https://github.com/shyiko/jabba/releases/download"
 curl -L "${JABBA_GITHUB}/${JABBA_VERSION}/jabba-${JABBA_VERSION}-${JABBA_SUFFIX}" \
-  -o jabba "$BINARY_URL"
+  -o jabba
 chmod +x jabba
 
 # Install JDK
