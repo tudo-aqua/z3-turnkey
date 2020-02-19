@@ -129,7 +129,7 @@ stages:
           - bash: contrib/run-integration-tests.sh
             env:
               JABBA_JDK: $(JDK)@$(JDKVersion)
-              JUNIT: $(JUnitVersion)
+              JUNIT_VERSION: $(JUnitVersion)
           - task: PublishTestResults@2
             inputs:
               testResultsFormat: JUnit
