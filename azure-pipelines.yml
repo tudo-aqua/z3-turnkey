@@ -126,16 +126,13 @@ stages:
           vmImage: $(VMImage)
         steps:
           - download: current
-          - bash: |
-              curl -sL https://github.com/shyiko/jabba/raw/master/install.sh | bash
-              source ~/.jabba/jabba.sh
-              jabba install $(JDK)@$(JDKVersion)
-              curl -sL https://repo1.maven.org/maven2/org/junit/platform/junit-platform-console-standalone/$(JUnitVersion)/junit-platform-console-standalone-$(JUnitVersion).jar -o junit.jar
-              shopt -s extglob
-              for class in $(jar tf z3-turnkey-*([0-9.])-integration-tests.jar | grep -F '.class' | sed 's#/#.#g;s#.class##g'); do
-                java -jar junit.jar --class-path z3-turnkey-*([0-9.]).jar --class-path z3-turnkey-*([0-9.])-integration-tests.jar --reports-dir "test-$class" --select-class "$class";
-              done
+          - bash: contrib/run-integration-tests.sh
+            env:
+              JABBA_JDK: $(JDK)@$(JDKVersion)
+              JUNIT: $(JUnitVersion)
           - task: PublishTestResults@2
             inputs:
               testResultsFormat: JUnit
               testResultsFiles: 'test-*/TEST-junit-jupiter.xml'
+              mergeTestResults: true
+              failTaskOnFailedTests: true
