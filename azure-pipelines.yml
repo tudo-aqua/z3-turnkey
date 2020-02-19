@@ -5,7 +5,7 @@ stages:
   - stage: Build
     displayName: 'Build master artifact on OS X'
     jobs:
-      - job: Build
+      - job: Gradle
         displayName: 'Gradle Build'
         pool:
           vmImage: 'macOS-latest'
@@ -18,10 +18,10 @@ stages:
           - publish: 'build/libs'
 
 
-  - stage: IntegrationTest
+  - stage: Test
     displayName: 'Integration test on multiple platforms'
     jobs:
-      - job: IntegrationTest
+      - job: JUnit
         variables:
           JUnitVersion: 1.6.0
         strategy:
