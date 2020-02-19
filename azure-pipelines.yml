@@ -1,0 +1,141 @@
+trigger:
+  - master
+
+stages:
+  - stage: Build
+    displayName: 'Build master artifact on OS X'
+    jobs:
+      - job: Gradle
+        displayName: 'Gradle Build'
+        pool:
+          vmImage: 'osx-latest'
+        steps:
+          - task: Gradle@2
+            inputs:
+              jdkVersionOption: '1.11'
+              jdkArchitectureOption: 'x64'
+              tasks: 'assemble integrationTestJar'
+          - publish: 'build/lib/*.jar'
+
+
+  - stage: IntegrationTest
+    displayName: 'Integration test on multiple platforms'
+    jobs:
+      - job: JUnit
+        variables:
+          JUnitVersion: 1.6.0
+        strategy:
+          matrix:
+            LinuxAdoptOpenJDK8:
+              VMImage: ubuntu-latest
+              JDK: adopt
+              JDKVersion: 1.8
+            LinuxAdoptOpenJDK11:
+              VMImage: ubuntu-latest
+              JDK: adopt
+              JDKVersion: 1.11
+            LinuxAdoptOpenJDK13:
+              VMImage: ubuntu-latest
+              JDK: adopt
+              JDKVersion: 1.13
+            LinuxOpenJDK11:
+              VMImage: ubuntu-latest
+              JDK: openjdk
+              JDKVersion: 1.11
+            LinuxOpenJDK13:
+              VMImage: ubuntu-latest
+              JDK: openjdk
+              JDKVersion: 1.13
+            LinuxZulu8:
+              VMImage: ubuntu-latest
+              JDK: zulu
+              JDKVersion: 1.8
+            LinuxZulu11:
+              VMImage: ubuntu-latest
+              JDK: zulu
+              JDKVersion: 1.11
+            LinuxZulu13:
+              VMImage: ubuntu-latest
+              JDK: zulu
+              JDKVersion: 1.13
+            OSXAdoptOpenJDK8:
+              VMImage: osx-latest
+              JDK: adopt
+              JDKVersion: 1.8
+            OSXAdoptOpenJDK11:
+              VMImage: osx-latest
+              JDK: adopt
+              JDKVersion: 1.11
+            OSXAdoptOpenJDK13:
+              VMImage: osx-latest
+              JDK: adopt
+              JDKVersion: 1.13
+            OSXOpenJDK11:
+              VMImage: osx-latest
+              JDK: openjdk
+              JDKVersion: 1.11
+            OSXOpenJDK13:
+              VMImage: osx-latest
+              JDK: openjdk
+              JDKVersion: 1.13
+            OSXZulu8:
+              VMImage: osx-latest
+              JDK: zulu
+              JDKVersion: 1.8
+            OSXZulu11:
+              VMImage: osx-latest
+              JDK: zulu
+              JDKVersion: 1.11
+            OSXZulu13:
+              VMImage: osx-latest
+              JDK: zulu
+              JDKVersion: 1.13
+            WindowsAdoptOpenJDK8:
+              VMImage: windows-latest
+              JDK: adopt
+              JDKVersion: 1.8
+            WindowsAdoptOpenJDK11:
+              VMImage: windows-latest
+              JDK: adopt
+              JDKVersion: 1.11
+            WindowsAdoptOpenJDK13:
+              VMImage: windows-latest
+              JDK: adopt
+              JDKVersion: 1.13
+            WindowsOpenJDK11:
+              VMImage: windows-latest
+              JDK: openjdk
+              JDKVersion: 1.11
+            WindowsOpenJDK13:
+              VMImage: windows-latest
+              JDK: openjdk
+              JDKVersion: 1.13
+            WindowsZulu8:
+              VMImage: windows-latest
+              JDK: zulu
+              JDKVersion: 1.8
+            WindowsZulu11:
+              VMImage: windows-latest
+              JDK: zulu
+              JDKVersion: 1.11
+            WindowsZulu13:
+              VMImage: windows-latest
+              JDK: zulu
+              JDKVersion: 1.13
+        pool:
+          vmImage: $(VMImage)
+        steps:
+          - download: current
+          - bash: |
+              curl -sL https://github.com/shyiko/jabba/raw/master/install.sh | bash
+              source ~/.jabba/jabba.sh
+              jabba install $(JDK)@$(JDKVersion)
+              curl -sL https://repo1.maven.org/maven2/org/junit/platform/junit-platform-console-standalone/$(JUnitVersion)/junit-platform-console-standalone-$(JUnitVersion).jar -o junit.jar
+              shopt -s extglob
+              for class in $(jar tf z3-turnkey-*([0-9.])-integration-tests.jar | grep -F '.class' | sed 's#/#.#g;s#.class##g'); do
+                java -jar junit.jar --class-path z3-turnkey-*([0-9.]).jar --class-path z3-turnkey-*([0-9.])-integration-tests.jar --reports-dir "test-$class" --select-class "$class";
+              done
+          - task: PublishTestResults@2
+            inputs:
+              testResultsFormat: JUnit
+              testResultsFiles: 'test-*/TEST-junit-jupiter.xml'
