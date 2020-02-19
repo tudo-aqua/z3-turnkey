@@ -3,7 +3,7 @@
 set -euxo pipefail
 shopt -s extglob
 
-ls -aR # Debug output
+ls -aR "${DOWNLOAD_PATH}" # Debug output
 
 # Install Jabba
 
@@ -39,11 +39,11 @@ curl -L "${MAVEN}/${JUNIT_GROUP}/${JUNIT_ARTIFACT}/${JUNIT_VERSION}/${JUNIT_ARTI
 
 # Run Tests
 
-for class in $(jar tf Build/z3-turnkey-*([0-9.])-integration-tests.jar |
+for class in $(jar tf "${DOWNLOAD_PATH}"/z3-turnkey-*([0-9.])-integration-tests.jar |
   grep -F '.class' | sed 's#/#.#g;s#.class##g'); do
   java -jar junit.jar \
-    --class-path Build/z3-turnkey-*([0-9.]).jar \
-    --class-path Build/z3-turnkey-*([0-9.])-integration-tests.jar \
+    --class-path "${DOWNLOAD_PATH}"/z3-turnkey-*([0-9.]).jar \
+    --class-path "${DOWNLOAD_PATH}"/z3-turnkey-*([0-9.])-integration-tests.jar \
     --reports-dir "test-$class" \
     --select-class "$class"
 done

@@ -128,9 +128,10 @@ stages:
           - download: current
           - bash: contrib/run-integration-tests.sh
             env:
-              OS_IMAGE: $(VMImage)
+              DOWNLOAD_PATH: $(Pipeline.Workspace)/Build/
               JABBA_JDK: $(JDK)@$(JDKVersion)
               JUNIT_VERSION: $(JUnitVersion)
+              OS_IMAGE: $(VMImage)
           - task: PublishTestResults@2
             inputs:
               testResultsFormat: JUnit
