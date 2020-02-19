@@ -3,8 +3,6 @@
 set -euxo pipefail
 shopt -s extglob
 
-ls -aR "${DOWNLOAD_PATH}" # Debug output
-
 # Install Jabba
 
 JABBA_VERSION="$(curl -Ls https://shyiko.github.com/jabba/latest)"
