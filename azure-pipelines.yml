@@ -128,7 +128,7 @@ stages:
           - download: current
           - bash: contrib/run-integration-tests.sh
             env:
-              DOWNLOAD_PATH: $(Pipeline.Workspace)/Build/
+              DOWNLOAD_PATH: $(Pipeline.Workspace)
               JABBA_JDK: $(JDK)@$(JDKVersion)
               JUNIT_VERSION: $(JUnitVersion)
               OS_IMAGE: $(VMImage)
