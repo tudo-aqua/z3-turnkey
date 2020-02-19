@@ -18,7 +18,7 @@ data class JDK(val name: String, val jabbaName: String, val versions: List<Int>)
 
 val platforms = listOf(
     Platform("Linux", "ubuntu-latest"),
-    Platform("OSX", "osx-latest"),
+    Platform("OSX", "macOS-latest"),
     Platform("Windows", "windows-latest")
 )
 

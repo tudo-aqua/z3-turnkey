@@ -8,7 +8,7 @@ stages:
       - job: Gradle
         displayName: 'Gradle Build'
         pool:
-          vmImage: 'osx-latest'
+          vmImage: 'macOS-latest'
         steps:
           - task: Gradle@2
             inputs:
@@ -59,35 +59,35 @@ stages:
               JDK: zulu
               JDKVersion: 1.13
             OSXAdoptOpenJDK8:
-              VMImage: osx-latest
+              VMImage: macOS-latest
               JDK: adopt
               JDKVersion: 1.8
             OSXAdoptOpenJDK11:
-              VMImage: osx-latest
+              VMImage: macOS-latest
               JDK: adopt
               JDKVersion: 1.11
             OSXAdoptOpenJDK13:
-              VMImage: osx-latest
+              VMImage: macOS-latest
               JDK: adopt
               JDKVersion: 1.13
             OSXOpenJDK11:
-              VMImage: osx-latest
+              VMImage: macOS-latest
               JDK: openjdk
               JDKVersion: 1.11
             OSXOpenJDK13:
-              VMImage: osx-latest
+              VMImage: macOS-latest
               JDK: openjdk
               JDKVersion: 1.13
             OSXZulu8:
-              VMImage: osx-latest
+              VMImage: macOS-latest
               JDK: zulu
               JDKVersion: 1.8
             OSXZulu11:
-              VMImage: osx-latest
+              VMImage: macOS-latest
               JDK: zulu
               JDKVersion: 1.11
             OSXZulu13:
-              VMImage: osx-latest
+              VMImage: macOS-latest
               JDK: zulu
               JDKVersion: 1.13
             WindowsAdoptOpenJDK8:
