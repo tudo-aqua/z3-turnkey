@@ -15,7 +15,7 @@ stages:
               jdkVersionOption: '1.11'
               jdkArchitectureOption: 'x64'
               tasks: 'assemble integrationTestJar'
-          - publish: 'build/lib/*.jar'
+          - publish: 'build/libs/*.jar'
 
 
   - stage: IntegrationTest
