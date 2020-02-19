@@ -122,7 +122,6 @@ stages:
               VMImage: windows-latest
               JDK: zulu
               JDKVersion: 1.13-0
-        displayName: 'Integration test on $(VMImage) with $(JDK)@$(JDKVersion) JDK'
         pool:
           vmImage: $(VMImage)
         steps:
