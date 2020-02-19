@@ -7,6 +7,8 @@ MAVEN='https://repo1.maven.org/maven2'
 JUNIT_GROUP='org/junit/platform'
 JUNIT_ARTIFACT='junit-platform-console-standalone'
 
+ls -R # Debug output
+
 curl -sL https://github.com/shyiko/jabba/raw/master/install.sh | bash
 source ~/.jabba/jabba.sh
 jabba install "${JABBA_JDK}"
