@@ -36,7 +36,7 @@ platforms.forEach { platform ->
                 ${platform.name}${jdk.name}$jdkVersion:
                   VMImage: ${platform.image}
                   JDK: ${jdk.jabbaName}
-                  JDKVersion: 1.$jdkVersion""".replaceIndent("  ".repeat(7))
+                  JDKVersion: 1.$jdkVersion-0""".replaceIndent("  ".repeat(7))
             )
         }
     }
