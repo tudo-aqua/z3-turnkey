@@ -21,6 +21,7 @@ import com.github.javaparser.ast.stmt.ExpressionStmt
 import de.undercouch.gradle.tasks.download.Download
 import org.gradle.api.JavaVersion.VERSION_1_8
 import org.gradle.process.internal.ExecException
+import ru.vyarus.gradle.plugin.python.cmd.Python
 import java.io.ByteArrayOutputStream
 import java.nio.file.Files.createDirectories
 import java.nio.file.Files.list
@@ -33,6 +34,7 @@ plugins {
     id("de.undercouch.download").version("4.0.2")
     `java-library`
     `maven-publish`
+    id("ru.vyarus.use-python") version "1.2.0"
     signing
 }
 
@@ -74,18 +76,6 @@ fun execCommand(vararg commands: String): ExecResult {
         false to null
     }
     return ExecResult(executed, exitValue, stdOut.toByteArray(), stdErr.toByteArray())
-}
-
-
-val python3: String by lazy {
-    (properties["python"] as? String)?.let { return@lazy it }
-
-    listOf("python", "python3").forEach {
-        val result = execCommand(it, "--version")
-        if (result.successful && String(result.standardOutput).startsWith("Python 3.")) return@lazy it
-    }
-
-    throw GradleException("No Python 3 defined or found on the search path")
 }
 
 
@@ -208,9 +198,12 @@ fun Task.z3GeneratorScript(scriptName: String, outputName: String, realOutputPac
             listOf("--java-package-name", z3Package, "--java-output-dir", outputDir.toString()) + headers
 
         createDirectories(output.resolve(packageToPath(realOutputPackage)))
-        exec {
-            commandLine = listOf(python3, "-B", scriptDir.resolve("$scriptName.py").toString()) + generatorOptions
-        }
+
+        Python(project).exec(
+            (listOf(
+                "-B", scriptDir.resolve("$scriptName.py").toString()
+            ) + generatorOptions).toTypedArray()
+        )
     }
 }
 
