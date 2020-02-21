@@ -31,7 +31,7 @@ import kotlin.streams.toList
 
 
 plugins {
-    id("de.undercouch.download").version("4.0.2")
+    id("de.undercouch.download") version "4.0.2"
     `java-library`
     `maven-publish`
     id("ru.vyarus.use-python") version "1.2.0"
@@ -137,6 +137,7 @@ val downloadZ3Source by tasks.registering(Download::class) {
     description = "Download the Z3 source archive."
     src("https://github.com/Z3Prover/z3/archive/z3-$z3Version/z3-$z3Version.zip")
     dest(buildDir.toPath().resolve("source-archive").resolve("z3-$z3Version.zip").toFile())
+    quiet(true)
     overwrite(false)
 }
 
@@ -252,6 +253,7 @@ z3Architectures.forEach { (arch, osData) ->
         description = "Download the Z3 binary distribution for $arch."
         src("https://github.com/Z3Prover/z3/releases/download/z3-$z3Version/z3-$z3Version-$arch.zip")
         dest(buildDir.toPath().resolve("binary-archives").resolve("z3-$z3Version-$arch.zip").toFile())
+        quiet(true)
         overwrite(false)
     }
 
