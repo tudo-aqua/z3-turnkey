@@ -34,7 +34,7 @@ plugins {
     id("de.undercouch.download") version "4.0.4"
     `java-library`
     `maven-publish`
-    id("ru.vyarus.use-python") version "1.2.0"
+    id("ru.vyarus.use-python") version "2.2.0"
     signing
 }
 
