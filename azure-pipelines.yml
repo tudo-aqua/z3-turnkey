@@ -35,7 +35,7 @@ stages:
     jobs:
       - job: JUnit
         variables:
-          JUnitVersion: 1.6.0
+          JUnitVersion: 1.6.2
         strategy:
           matrix:
             LinuxAdoptOpenJDK8:
