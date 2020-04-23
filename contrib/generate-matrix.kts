@@ -23,9 +23,9 @@ val platforms = listOf(
 )
 
 val jdks = listOf(
-    JDK("AdoptOpenJDK", "adopt", listOf(8, 11, 13)),
-    JDK("OpenJDK", "openjdk", listOf(11, 13)),
-    JDK("Zulu", "zulu", listOf(8, 11, 13))
+    JDK("AdoptOpenJDK", "adopt", listOf(8, 11, 14)),
+    JDK("OpenJDK", "openjdk", listOf(11, 14)),
+    JDK("Zulu", "zulu", listOf(8, 11, 14))
 )
 
 platforms.forEach { platform ->

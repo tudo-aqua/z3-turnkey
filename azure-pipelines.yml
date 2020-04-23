@@ -46,18 +46,18 @@ stages:
               VMImage: ubuntu-latest
               JDK: adopt
               JDKVersion: 1.11-0
-            LinuxAdoptOpenJDK13:
+            LinuxAdoptOpenJDK14:
               VMImage: ubuntu-latest
               JDK: adopt
-              JDKVersion: 1.13-0
+              JDKVersion: 1.14-0
             LinuxOpenJDK11:
               VMImage: ubuntu-latest
               JDK: openjdk
               JDKVersion: 1.11-0
-            LinuxOpenJDK13:
+            LinuxOpenJDK14:
               VMImage: ubuntu-latest
               JDK: openjdk
-              JDKVersion: 1.13-0
+              JDKVersion: 1.14-0
             LinuxZulu8:
               VMImage: ubuntu-latest
               JDK: zulu
@@ -66,10 +66,10 @@ stages:
               VMImage: ubuntu-latest
               JDK: zulu
               JDKVersion: 1.11-0
-            LinuxZulu13:
+            LinuxZulu14:
               VMImage: ubuntu-latest
               JDK: zulu
-              JDKVersion: 1.13-0
+              JDKVersion: 1.14-0
             OSXAdoptOpenJDK8:
               VMImage: macOS-latest
               JDK: adopt
@@ -78,18 +78,18 @@ stages:
               VMImage: macOS-latest
               JDK: adopt
               JDKVersion: 1.11-0
-            OSXAdoptOpenJDK13:
+            OSXAdoptOpenJDK14:
               VMImage: macOS-latest
               JDK: adopt
-              JDKVersion: 1.13-0
+              JDKVersion: 1.14-0
             OSXOpenJDK11:
               VMImage: macOS-latest
               JDK: openjdk
               JDKVersion: 1.11-0
-            OSXOpenJDK13:
+            OSXOpenJDK14:
               VMImage: macOS-latest
               JDK: openjdk
-              JDKVersion: 1.13-0
+              JDKVersion: 1.14-0
             OSXZulu8:
               VMImage: macOS-latest
               JDK: zulu
@@ -98,10 +98,10 @@ stages:
               VMImage: macOS-latest
               JDK: zulu
               JDKVersion: 1.11-0
-            OSXZulu13:
+            OSXZulu14:
               VMImage: macOS-latest
               JDK: zulu
-              JDKVersion: 1.13-0
+              JDKVersion: 1.14-0
             WindowsAdoptOpenJDK8:
               VMImage: windows-latest
               JDK: adopt
@@ -110,18 +110,18 @@ stages:
               VMImage: windows-latest
               JDK: adopt
               JDKVersion: 1.11-0
-            WindowsAdoptOpenJDK13:
+            WindowsAdoptOpenJDK14:
               VMImage: windows-latest
               JDK: adopt
-              JDKVersion: 1.13-0
+              JDKVersion: 1.14-0
             WindowsOpenJDK11:
               VMImage: windows-latest
               JDK: openjdk
               JDKVersion: 1.11-0
-            WindowsOpenJDK13:
+            WindowsOpenJDK14:
               VMImage: windows-latest
               JDK: openjdk
-              JDKVersion: 1.13-0
+              JDKVersion: 1.14-0
             WindowsZulu8:
               VMImage: windows-latest
               JDK: zulu
@@ -130,10 +130,10 @@ stages:
               VMImage: windows-latest
               JDK: zulu
               JDKVersion: 1.11-0
-            WindowsZulu13:
+            WindowsZulu14:
               VMImage: windows-latest
               JDK: zulu
-              JDKVersion: 1.13-0
+              JDKVersion: 1.14-0
         pool:
           vmImage: $(VMImage)
         steps:
