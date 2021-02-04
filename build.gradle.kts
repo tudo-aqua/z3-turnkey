@@ -49,7 +49,7 @@ plugins {
 
 group = "io.github.tudo-aqua"
 
-val z3Version = "4.8.9"
+val z3Version = "4.8.10"
 val turnkeyVersion = ""
 version = "$z3Version$turnkeyVersion"
 
@@ -132,10 +132,10 @@ data class OSData(val os: String, val architecture: String, val extension: Strin
 
 /** The OS-CPU combinations Z3 distributions are available for. */
 val z3Architectures = mapOf(
-        "x64-osx-10.14.6" to OSData("osx", "amd64", "dylib"),
-        "x64-ubuntu-16.04" to OSData("linux", "amd64", "so"),
-        "x64-win" to OSData("windows", "amd64", "dll"),
-        "x86-win" to OSData("windows", "x86", "dll")
+    "x64-osx-10.14.6" to OSData("osx", "amd64", "dylib"),
+    "x64-ubuntu-16.04" to OSData("linux", "amd64", "so"),
+    "x64-win" to OSData("windows", "amd64", "dll"),
+    "x86-win" to OSData("windows", "x86", "dll")
 )
 
 

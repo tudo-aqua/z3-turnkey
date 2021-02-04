@@ -30,7 +30,7 @@ public class Z3LoaderTest {
     @Test
     public void testLoading() {
         String version = Native.getFullVersion();
-        assertTrue(version.contains("4.8.9"), "The loaded lib should be in the right version");
+        assertTrue(version.contains("4.8.10"), "The loaded lib should be in the right version");
     }
 
 }
