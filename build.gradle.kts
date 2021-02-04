@@ -12,6 +12,7 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
+import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import com.github.javaparser.JavaParser
 import com.github.javaparser.ast.NodeList
 import com.github.javaparser.ast.body.InitializerDeclaration
@@ -31,6 +32,7 @@ import kotlin.streams.toList
 
 
 plugins {
+    id("com.github.ben-manes.versions") version "0.36.0"
     id("de.undercouch.download") version "4.0.4"
     `java-library`
     `maven-publish`
@@ -51,6 +53,20 @@ java {
     targetCompatibility = VERSION_1_8
     withJavadocJar()
     withSourcesJar()
+}
+
+
+fun isStable(version: String): Boolean {
+    val stableKeyword = listOf("RELEASE", "FINAL", "GA").any { version.toUpperCase().contains(it) }
+    val regex = "^[0-9,.v-]+(-r)?$".toRegex()
+    return stableKeyword || regex.matches(version)
+}
+
+
+tasks.named("dependencyUpdates", DependencyUpdatesTask::class.java).configure {
+    rejectVersionIf {
+        !isStable(candidate.version) && isStable(currentVersion)
+    }
 }
 
 
