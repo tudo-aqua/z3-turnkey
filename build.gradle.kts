@@ -33,7 +33,7 @@ import kotlin.streams.toList
 
 plugins {
     id("com.github.ben-manes.versions") version "0.36.0"
-    id("de.undercouch.download") version "4.0.4"
+    id("de.undercouch.download") version "4.1.1"
     `java-library`
     `maven-publish`
     id("ru.vyarus.use-python") version "2.2.0"
@@ -111,7 +111,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath(group = "com.github.javaparser", name = "javaparser-core", version = "3.15.12")
+        classpath(group = "com.github.javaparser", name = "javaparser-core", version = "3.18.0")
     }
 }
 
@@ -351,8 +351,8 @@ repositories {
 }
 
 dependencies {
-    integrationTestImplementation("org.junit.jupiter:junit-jupiter-api:5.6.0")
-    integrationTestRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.6.0")
+    integrationTestImplementation("org.junit.jupiter:junit-jupiter-api:5.7.1")
+    integrationTestRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.7.1")
 }
 
 val integrationTest by tasks.registering(Test::class) {
