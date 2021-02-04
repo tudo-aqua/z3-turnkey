@@ -12,6 +12,7 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
+import org.gradle.api.tasks.testing.logging.TestLogEvent.*
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import com.github.javaparser.JavaParser
 import com.github.javaparser.ast.NodeList
@@ -366,6 +367,9 @@ val integrationTest by tasks.registering(Test::class) {
 
     testClassesDirs = sourceSets["integrationTest"].output.classesDirs
     classpath = sourceSets["integrationTest"].runtimeClasspath
+    testLogging {
+        events(FAILED, STANDARD_ERROR, SKIPPED, PASSED)
+    }
 }
 
 
