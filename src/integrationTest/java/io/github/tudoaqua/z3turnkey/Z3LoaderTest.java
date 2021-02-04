@@ -17,6 +17,8 @@ package io.github.tudoaqua.z3turnkey;
 import com.microsoft.z3.Native;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
  * Test that Z3 native methods can successfully be invoked.
  */
@@ -27,7 +29,8 @@ public class Z3LoaderTest {
      */
     @Test
     public void testLoading() {
-        Native.getFullVersion();
+        String version = Native.getFullVersion();
+        assertTrue(version.contains("4.8.9"), "The loaded lib should be in the right version");
     }
 
 }
