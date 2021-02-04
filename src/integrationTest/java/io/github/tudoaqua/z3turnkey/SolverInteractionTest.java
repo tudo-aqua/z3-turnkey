@@ -24,7 +24,6 @@ import com.microsoft.z3.Status;
 import org.junit.jupiter.api.Test;
 
 import static com.microsoft.z3.Status.SATISFIABLE;
-import static com.microsoft.z3.Status.UNKNOWN;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -58,14 +57,14 @@ public class SolverInteractionTest {
 		solver.push();
 		Expr diff_leq_two_thirds = ctx.mkLe(diff, two_thirds);
 		Status var1 = solver.check(diff_leq_two_thirds);
-		assertEquals(UNKNOWN, var1);
+		assertEquals(SATISFIABLE, var1);
 		solver.pop();
 
 		solver.push();
 		BoolExpr diff_is_two_thirds = ctx.mkEq(diff, two_thirds);
 		solver.add(diff_is_two_thirds);
 		Status var2 = solver.check();
-		assertEquals(UNKNOWN,var2);
+		assertEquals(SATISFIABLE,var2);
 		solver.pop();
 	}
 
