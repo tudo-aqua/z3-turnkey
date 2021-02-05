@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Simon Dierl <simon.dierl@cs.tu-dortmund.de>
+ * Copyright 2019-2021 The Z3-TurnKey Authors
  * SPDX-License-Identifier: ISC
  *
  * Permission to use, copy, modify, and/or distribute this software for any purpose with or without fee is hereby

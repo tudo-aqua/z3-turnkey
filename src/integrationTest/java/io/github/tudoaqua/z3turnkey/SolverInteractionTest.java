@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2021 Malte Mues (@mmuesly, mail.mues@gmail.com)
+ * Copyright 2019-2021 The Z3-TurnKey Authors
  * SPDX-License-Identifier: ISC
  *
  * Permission to use, copy, modify, and/or distribute this software for any purpose with or without fee is hereby
@@ -11,6 +11,7 @@
  * AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
  * PERFORMANCE OF THIS SOFTWARE.
  */
+
 package io.github.tudoaqua.z3turnkey;
 
 import com.microsoft.z3.ArithExpr;
