@@ -23,14 +23,23 @@ import com.microsoft.z3.Solver;
 import com.microsoft.z3.Status;
 import org.junit.jupiter.api.Test;
 
+import static com.microsoft.z3.Status.SATISFIABLE;
+import static com.microsoft.z3.Status.UNKNOWN;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+/**
+ * Test more complicated solver interactions that require both the libz3java and the libz3 to be loaded correctly.
+ */
 public class SolverInteractionTest {
 
+	/**
+	 * Check the satisfiability of two floating-point expression.
+	 */
 	@Test
-	public void evaluatesExpression() {
+	public void testArithmeticSolving() {
 		Context ctx = new Context();
+
 		ArithExpr x = ctx.mkIntConst("x");
 		ArithExpr y = ctx.mkRealConst("y");
 		ArithExpr three = ctx.mkReal(3);
@@ -42,31 +51,37 @@ public class SolverInteractionTest {
 		BoolExpr x_leq_y = ctx.mkLe(x, y);
 		BoolExpr neg1_lt_x = ctx.mkLt(neg2, x);
 		BoolExpr assumptions = ctx.mkAnd(x_geq_3y, x_leq_y, neg1_lt_x);
+
 		Solver solver = ctx.mkSolver();
 		solver.add(assumptions);
+
 		solver.push();
 		Expr diff_leq_two_thirds = ctx.mkLe(diff, two_thirds);
 		Status var1 = solver.check(diff_leq_two_thirds);
-		assertEquals(Status.UNKNOWN, var1);
+		assertEquals(UNKNOWN, var1);
 		solver.pop();
+
 		solver.push();
 		BoolExpr diff_is_two_thirds = ctx.mkEq(diff, two_thirds);
 		solver.add(diff_is_two_thirds);
 		Status var2 = solver.check();
-		assertEquals(Status.UNKNOWN,var2);
+		assertEquals(UNKNOWN,var2);
 		solver.pop();
 	}
 
+	/**
+	 * Check the satisfiability of a simple comparison.
+	 */
 	@Test
-	public void example2Test(){
-
+	public void testSimpleSolving(){
 		Context ctx = new Context();
 		Solver solver = ctx.mkSolver();
 
 		ArithExpr x = ctx.mkIntConst("x");
 		ArithExpr c = ctx.mkInt(15);
 		BoolExpr b = ctx.mkGt(x, c);
-		assertEquals(Status.SATISFIABLE, solver.check(b));
+		assertEquals(SATISFIABLE, solver.check(b));
+
 		Model m = solver.getModel();
 		Expr evaluated = m.evaluate(b, true);
 		assertTrue(evaluated.isTrue(), "The model should evaluate");

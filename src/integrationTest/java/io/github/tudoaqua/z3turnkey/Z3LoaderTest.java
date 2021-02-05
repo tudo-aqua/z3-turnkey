@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Test that Z3 native methods can successfully be invoked.
  */
-public class TestZ3Loader {
+public class Z3LoaderTest {
 
     /**
      * Invoke the #getFullVersion method from Z3.
