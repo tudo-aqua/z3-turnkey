@@ -12,7 +12,6 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-import org.gradle.api.tasks.testing.logging.TestLogEvent.*
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import com.github.javaparser.JavaParser
 import com.github.javaparser.ast.NodeList
@@ -22,6 +21,10 @@ import com.github.javaparser.ast.stmt.BlockStmt
 import com.github.javaparser.ast.stmt.ExpressionStmt
 import de.undercouch.gradle.tasks.download.Download
 import org.gradle.api.JavaVersion.VERSION_1_8
+import org.gradle.api.tasks.testing.logging.TestLogEvent.FAILED
+import org.gradle.api.tasks.testing.logging.TestLogEvent.PASSED
+import org.gradle.api.tasks.testing.logging.TestLogEvent.STANDARD_ERROR
+import org.gradle.api.tasks.testing.logging.TestLogEvent.SKIPPED
 import org.gradle.process.internal.ExecException
 import ru.vyarus.gradle.plugin.python.cmd.Python
 import java.io.ByteArrayOutputStream
@@ -74,8 +77,8 @@ tasks.named("dependencyUpdates", DependencyUpdatesTask::class.java).configure {
 
 
 class ExecResult(
-    val executed: Boolean, exitValue: Int?,
-    val standardOutput: ByteArray, val standardError: ByteArray
+        val executed: Boolean, exitValue: Int?,
+        val standardOutput: ByteArray, val standardError: ByteArray
 ) {
     val successful = executed && exitValue == 0
 }
@@ -129,10 +132,10 @@ data class OSData(val os: String, val architecture: String, val extension: Strin
 
 /** The OS-CPU combinations Z3 distributions are available for. */
 val z3Architectures = mapOf(
-    "x64-osx-10.14.6" to OSData("osx", "amd64", "dylib"),
-    "x64-ubuntu-16.04" to OSData("linux", "amd64", "so"),
-    "x64-win" to OSData("windows", "amd64", "dll"),
-    "x86-win" to OSData("windows", "x86", "dll")
+        "x64-osx-10.14.6" to OSData("osx", "amd64", "dylib"),
+        "x64-ubuntu-16.04" to OSData("linux", "amd64", "so"),
+        "x64-win" to OSData("windows", "amd64", "dll"),
+        "x86-win" to OSData("windows", "x86", "dll")
 )
 
 
@@ -141,13 +144,14 @@ val z3Architectures = mapOf(
  * @return the respective relative path.
  * */
 fun packageToPath(packageName: String): Path = Path.of(
-    packageName.substringBefore("."),
-    *packageName.split(".").drop(1).toTypedArray()
+        packageName.substringBefore("."),
+        *packageName.split(".").drop(1).toTypedArray()
 )
 
 
 /** The name of the Z3 Java package. */
 val z3Package = "com.microsoft.z3"
+
 /** The relative path to the Z3 package. */
 val z3PackagePath = packageToPath(z3Package)
 
@@ -210,19 +214,19 @@ fun Task.z3GeneratorScript(scriptName: String, outputName: String, realOutputPac
         val outputDir = output.resolve(z3PackagePath)
 
         val headers = list(sourceDir.resolve("src").resolve("api"))
-            .filter {
-                val fileName = it.fileName.toString()
-                fileName.startsWith("z3") && fileName.endsWith(".h") && !fileName.contains("v1")
-            }.map(Path::toString).toList()
+                .filter {
+                    val fileName = it.fileName.toString()
+                    fileName.startsWith("z3") && fileName.endsWith(".h") && !fileName.contains("v1")
+                }.map(Path::toString).toList()
         val generatorOptions =
-            listOf("--java-package-name", z3Package, "--java-output-dir", outputDir.toString()) + headers
+                listOf("--java-package-name", z3Package, "--java-output-dir", outputDir.toString()) + headers
 
         createDirectories(output.resolve(packageToPath(realOutputPackage)))
 
         Python(project).exec(
-            (listOf(
-                "-B", scriptDir.resolve("$scriptName.py").toString()
-            ) + generatorOptions).toTypedArray()
+                (listOf(
+                        "-B", scriptDir.resolve("$scriptName.py").toString()
+                ) + generatorOptions).toTypedArray()
         )
     }
 }
@@ -256,9 +260,9 @@ val rewriteNativeJava by tasks.registering {
         val compilationUnit = parse.result.orElseThrow()
         val nativeClass = compilationUnit.primaryType.orElseThrow()
         val staticInitializer = nativeClass.members
-            .filterIsInstance(InitializerDeclaration::class.java).first(InitializerDeclaration::isStatic)
+                .filterIsInstance(InitializerDeclaration::class.java).first(InitializerDeclaration::isStatic)
         staticInitializer.body =
-            BlockStmt(NodeList(ExpressionStmt(MethodCallExpr("Z3Loader.loadZ3"))))
+                BlockStmt(NodeList(ExpressionStmt(MethodCallExpr("Z3Loader.loadZ3"))))
 
         val rewrittenNativeJava = output.resolve(z3PackagePath).resolve("Native.java")
         createDirectories(rewrittenNativeJava.parent)
@@ -303,11 +307,11 @@ z3Architectures.forEach { (arch, osData) ->
             if (osData.os == "osx") {
                 exec {
                     commandLine = listOf(
-                        installNameTool,
-                        "-change", "libz3.${osData.extension}", "@loader_path/libz3.${osData.extension}",
-                        output.resolve("native")
-                            .resolve("${osData.os}-${osData.architecture}")
-                            .resolve("libz3java.${osData.extension}").toAbsolutePath().toString()
+                            installNameTool,
+                            "-change", "libz3.${osData.extension}", "@loader_path/libz3.${osData.extension}",
+                            output.resolve("native")
+                                    .resolve("${osData.os}-${osData.architecture}")
+                                    .resolve("libz3java.${osData.extension}").toAbsolutePath().toString()
                     )
                 }
             }
@@ -321,14 +325,14 @@ sourceSets {
     main {
         java {
             srcDirs(
-                *listOf(copyNonGeneratedSources, mkConstsFiles, rewriteNativeJava)
-                    .map { it.get().outputs.files }.toTypedArray()
+                    *listOf(copyNonGeneratedSources, mkConstsFiles, rewriteNativeJava)
+                            .map { it.get().outputs.files }.toTypedArray()
             )
         }
         resources {
             srcDirs(
-                *z3Architectures.keys
-                    .map { tasks.named("copyNativeLibraries-$it").get().outputs.files }.toTypedArray()
+                    *z3Architectures.keys
+                            .map { tasks.named("copyNativeLibraries-$it").get().outputs.files }.toTypedArray()
             )
         }
     }
@@ -389,8 +393,8 @@ val integrationTestJar by tasks.registering(Jar::class) {
 // ensure correct build order
 tasks.compileJava.get().dependsOn(copyNonGeneratedSources, mkConstsFiles, rewriteNativeJava)
 tasks.processResources.get().dependsOn(
-    *z3Architectures.keys
-        .map { tasks.named("copyNativeLibraries-$it") }.toTypedArray()
+        *z3Architectures.keys
+                .map { tasks.named("copyNativeLibraries-$it") }.toTypedArray()
 )
 
 
@@ -401,8 +405,8 @@ publishing {
             pom {
                 name.set("Z3-TurnKey")
                 description.set(
-                    "A self-unpacking, standalone Z3 distribution that ships all required native support " +
-                            "code and automatically unpacks it at runtime."
+                        "A self-unpacking, standalone Z3 distribution that ships all required native support " +
+                                "code and automatically unpacks it at runtime."
                 )
                 url.set("https://github.com/tudo-aqua/z3-turnkey")
                 licenses {
