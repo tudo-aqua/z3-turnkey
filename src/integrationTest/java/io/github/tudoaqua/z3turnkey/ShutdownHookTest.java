@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Test that the loader library schedules the unpacked Z3 native libraries for deletion.
  */
-public class TestShutdownHook {
+public class ShutdownHookTest {
 
     /**
      * Reflectively obtain the list of deletion-schedules files and verify that files containing {@code z3} and
@@ -47,12 +47,12 @@ public class TestShutdownHook {
         files.setAccessible(true);
 
         @SuppressWarnings("unchecked") final Set<String> before =
-                new HashSet<String>((Collection<String>) files.get(null));
+                new HashSet<>((Collection<String>) files.get(null));
 
         Native.getFullVersion();
 
         @SuppressWarnings("unchecked") final Set<String> after =
-                new HashSet<String>((Collection<String>) files.get(null));
+                new HashSet<>((Collection<String>) files.get(null));
         HashSet<String> newFiles = new HashSet<>(after);
         newFiles.removeAll(before);
 
