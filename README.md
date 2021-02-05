@@ -1,7 +1,7 @@
 [![Azure DevOps builds](https://img.shields.io/azure-devops/build/tudo-aqua/z3-turnkey/1?logo=azure-pipelines)](https://dev.azure.com/tudo-aqua/z3-turnkey)
 [![Travis (.org)](https://img.shields.io/travis/tudo-aqua/z3-turnkey?logo=travis)](https://travis-ci.com/tudo-aqua/z3-turnkey)
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.tudo-aqua/z3-turnkey?logo=apache-maven)](https://search.maven.org/artifact/io.github.tudo-aqua/z3-turnkey)
-### The Z3-TurnKey distribution
+### The Z3-TurnKey Distribution
 
 [The Z3 Theorem Prover](https://github.com/Z3Prover/z3/) is a widely used SMT solver that is written in C and C++. The
 authors provide a Java API, however, it is not trivial to set up in a Java project. This project aims to solve this
