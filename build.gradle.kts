@@ -28,6 +28,7 @@ import java.nio.file.Files.createDirectories
 import java.nio.file.Files.list
 import java.nio.file.Files.writeString
 import java.nio.file.Path
+import java.time.LocalDate.now
 import kotlin.streams.toList
 
 
@@ -36,6 +37,7 @@ plugins {
     id("de.undercouch.download") version "4.1.1"
     `java-library`
     `maven-publish`
+    id("org.cadixdev.licenser") version "0.5.0"
     id("ru.vyarus.use-python") version "2.2.0"
     signing
 }
@@ -442,4 +444,33 @@ signing {
     isRequired = !hasProperty("skip-signing")
     useGpgCmd()
     sign(publishing.publications["maven"])
+}
+
+
+license {
+    /*
+     * This plugin needs to go after the declaration of the integrationTest subset. Since it can not exclude source
+     * files based on the file tree's location, i.e., the downloaded Z3 files, the main source set is removed and
+     * added (as mainInternal) without files in the build directory.
+     */
+
+    header = project.file("contrib/license-header.txt")
+    ext["year"] = now().year
+
+    sourceSets = sourceSets.filter { it != project.sourceSets.main.get() }
+
+    tasks {
+        create("buildFiles") {
+            files = project.files("build.gradle.kts", "settings.gradle.kts")
+        }
+        create("contrib") {
+            files = fileTree("${project.rootDir}/contrib").matching { exclude("license-header.txt") }
+        }
+        create("pipeline") {
+            files = project.files("azure-pipelines.yml")
+        }
+        create("mainInternal") {
+            files = project.sourceSets.main.get().allSource.filter { !it.startsWith(project.buildDir) }
+        }
+    }
 }
