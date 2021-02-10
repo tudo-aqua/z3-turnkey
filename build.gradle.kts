@@ -471,11 +471,8 @@ license {
         create("buildFiles") {
             files = project.files("build.gradle.kts", "settings.gradle.kts")
         }
-        create("contrib") {
-            files = fileTree("${project.rootDir}/contrib").matching { exclude("license-header.txt") }
-        }
-        create("pipeline") {
-            files = project.files("azure-pipelines.yml")
+        create("workflows") {
+            files = fileTree("${project.rootDir}/.github/workflows/")
         }
         create("mainInternal") {
             files = project.sourceSets.main.get().allSource.filter { !it.startsWith(project.buildDir) }

@@ -1,0 +1,120 @@
+#
+# Copyright 2019-2021 The Z3-TurnKey Authors
+# SPDX-License-Identifier: ISC
+#
+# Permission to use, copy, modify, and/or distribute this software for any purpose with or without fee is hereby
+# granted, provided that the above copyright notice and this permission notice appear in all copies.
+#
+# THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+# INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN
+# AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+# PERFORMANCE OF THIS SOFTWARE.
+#
+
+name: License Check, Build and Multi-Platform Integration Test
+
+on: [ push, pull_request ]
+
+jobs:
+  check-license:
+    name: License Header Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out from GitHub
+        uses: actions/checkout@v2
+      - name: Install JDK 11
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.11
+      - name: Check License Headers
+        uses: eskatos/gradle-command-action@v1.3.3
+        with:
+          arguments: -Pinstall_name_tool=true checkLicenses
+
+  build:
+    name: Build
+    runs-on: macos-latest
+    steps:
+      - name: Check out from GitHub
+        uses: actions/checkout@v2
+      - name: Install JDK 11
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.11
+      - name: Build with Gradle
+        uses: eskatos/gradle-command-action@v1.3.3
+        with:
+          arguments: build integrationTestJar
+      - name: Upload JAR artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: jars
+          path: build/libs/*.jar
+          if-no-files-found: error
+
+  test:
+    name: Integration Test on ${{ matrix.os }} for ${{ matrix.jdk }} version ${{ matrix.jdk-version }}
+    needs: build
+    runs-on: ${{ matrix.os }}
+    env:
+      jabba-version: 0.11.2
+      junit-version: 1.7.1
+    strategy:
+      matrix:
+        os: [ macos-latest, ubuntu-latest, windows-latest ]
+        jdk: [ openjdk, zulu ] # https://github.com/shyiko/jabba/issues/769
+        jdk-version: [ 1.8, 1.11, 1.15 ]
+        exclude:
+          - jdk: openjdk
+            jdk-version: 1.8
+    steps:
+      - name: Install Jabba ${{ env.jabba-version }} for Linux
+        if: matrix.os == 'ubuntu-latest'
+        uses: carlosperate/download-file-action@v1.0.3
+        with:
+          file-url: "https://github.com/shyiko/jabba/releases/download/\
+                     ${{ env.jabba-version }}/jabba-${{ env.jabba-version }}-linux-amd64"
+          file-name: jabba
+      - name: Install Jabba ${{ env.jabba-version }} for MacOS
+        if: matrix.os == 'macos-latest'
+        uses: carlosperate/download-file-action@v1.0.3
+        with:
+          file-url: "https://github.com/shyiko/jabba/releases/download/\
+                     ${{ env.jabba-version }}/jabba-${{ env.jabba-version }}-darwin-amd64"
+          file-name: jabba
+      - name: Install Jabba ${{ env.jabba-version }} for Windows
+        if: matrix.os == 'windows-latest'
+        uses: carlosperate/download-file-action@v1.0.3
+        with:
+          file-url: "https://github.com/shyiko/jabba/releases/download/\
+                     ${{ env.jabba-version }}/jabba-${{ env.jabba-version }}-windows-amd64.exe"
+          file-name: jabba
+      - name: Install JDK ${{ matrix.jdk }} version ${{ matrix.jdk-version }} with Jabba
+        shell: bash
+        run: |
+          chmod +x jabba
+          ./jabba install ${{ matrix.jdk }}@${{ matrix.jdk-version }}
+      - name: Install JUnit ${{ env.junit-version }} Standalone Runner
+        uses: carlosperate/download-file-action@v1.0.3
+        with:
+          file-url: "https://repo1.maven.org/maven2/org/junit/platform/junit-platform-console-standalone/\
+                     ${{ env.junit-version }}/junit-platform-console-standalone-${{ env.junit-version }}.jar"
+          file-name: junit.jar
+      - name: Download Built JARs
+        uses: actions/download-artifact@v2
+        with:
+          name: jars
+      - name: Run Integration Tests
+        shell: bash
+        run: |
+          shopt -s extglob
+          for class in $(jar tf z3-turnkey-*([0-9.])-integration-tests.jar |
+              grep -F '.class' |
+              sed 's#/#.#g;s#.class##g'); do
+            java -jar junit.jar \
+              --class-path z3-turnkey-*([0-9.]).jar \
+              --class-path z3-turnkey-*([0-9.])-integration-tests.jar \
+              --reports-dir "test-$class" \
+              --select-class "$class"
+          done
