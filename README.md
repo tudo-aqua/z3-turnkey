@@ -1,5 +1,4 @@
-[![Azure DevOps builds](https://img.shields.io/azure-devops/build/tudo-aqua/z3-turnkey/1?logo=azure-pipelines)](https://dev.azure.com/tudo-aqua/z3-turnkey)
-[![Travis (.org)](https://img.shields.io/travis/tudo-aqua/z3-turnkey?logo=travis)](https://travis-ci.com/tudo-aqua/z3-turnkey)
+[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/tudo-aqua/z3-turnkey/License%20Check,%20Build%20and%20Multi-Platform%20Integration%20Test)](https://github.com/tudo-aqua/z3-turnkey/actions)
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.tudo-aqua/z3-turnkey?logo=apache-maven)](https://search.maven.org/artifact/io.github.tudo-aqua/z3-turnkey)
 ### The Z3-TurnKey Distribution
 
