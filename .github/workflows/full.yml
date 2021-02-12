@@ -58,7 +58,6 @@ jobs:
     needs: build
     runs-on: ${{ matrix.os }}
     env:
-      jabba-version: 0.11.2
       junit-version: 1.7.1
     strategy:
       matrix:
@@ -69,32 +68,10 @@ jobs:
           - jdk: openjdk
             jdk-version: 1.8
     steps:
-      - name: Install Jabba ${{ env.jabba-version }} for Linux
-        if: matrix.os == 'ubuntu-latest'
-        uses: carlosperate/download-file-action@v1.0.3
-        with:
-          file-url: "https://github.com/shyiko/jabba/releases/download/\
-                     ${{ env.jabba-version }}/jabba-${{ env.jabba-version }}-linux-amd64"
-          file-name: jabba
-      - name: Install Jabba ${{ env.jabba-version }} for MacOS
-        if: matrix.os == 'macos-latest'
-        uses: carlosperate/download-file-action@v1.0.3
-        with:
-          file-url: "https://github.com/shyiko/jabba/releases/download/\
-                     ${{ env.jabba-version }}/jabba-${{ env.jabba-version }}-darwin-amd64"
-          file-name: jabba
-      - name: Install Jabba ${{ env.jabba-version }} for Windows
-        if: matrix.os == 'windows-latest'
-        uses: carlosperate/download-file-action@v1.0.3
-        with:
-          file-url: "https://github.com/shyiko/jabba/releases/download/\
-                     ${{ env.jabba-version }}/jabba-${{ env.jabba-version }}-windows-amd64.exe"
-          file-name: jabba
       - name: Install JDK ${{ matrix.jdk }} version ${{ matrix.jdk-version }} with Jabba
-        shell: bash
-        run: |
-          chmod +x jabba
-          ./jabba install ${{ matrix.jdk }}@${{ matrix.jdk-version }}
+        uses: battila7/jdk-via-jabba@v1.2.0
+        with:
+          jdk: ${{ matrix.jdk }}@${{ matrix.jdk-version }}
       - name: Install JUnit ${{ env.junit-version }} Standalone Runner
         uses: carlosperate/download-file-action@v1.0.3
         with:
