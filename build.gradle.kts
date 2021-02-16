@@ -117,7 +117,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath(group = "com.github.javaparser", name = "javaparser-core", version = "3.18.0")
+        classpath(group = "com.github.javaparser", name = "javaparser-core", version = "3.19.0")
     }
 }
 
