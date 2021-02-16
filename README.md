@@ -1,4 +1,5 @@
 [![GitHub Workflow Status](https://img.shields.io/github/workflow/status/tudo-aqua/z3-turnkey/License%20Check,%20Build%20and%20Multi-Platform%20Integration%20Test)](https://github.com/tudo-aqua/z3-turnkey/actions)
+[![JavaDoc](https://javadoc.io/badge2/io.github.tudo-aqua/z3-turnkey/javadoc.svg)](https://javadoc.io/doc/io.github.tudo-aqua/z3-turnkey)
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.tudo-aqua/z3-turnkey?logo=apache-maven)](https://search.maven.org/artifact/io.github.tudo-aqua/z3-turnkey)
 ### The Z3-TurnKey Distribution
 
