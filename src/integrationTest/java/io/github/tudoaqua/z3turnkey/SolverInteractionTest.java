@@ -16,9 +16,13 @@ package io.github.tudoaqua.z3turnkey;
 
 import com.microsoft.z3.ArithExpr;
 import com.microsoft.z3.BoolExpr;
+import com.microsoft.z3.BoolSort;
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Expr;
+import com.microsoft.z3.IntExpr;
 import com.microsoft.z3.Model;
+import com.microsoft.z3.RealExpr;
+import com.microsoft.z3.RealSort;
 import com.microsoft.z3.Solver;
 import org.junit.jupiter.api.Test;
 
@@ -31,55 +35,56 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 public class SolverInteractionTest {
 
-	/**
-	 * Check the satisfiability of two floating-point expression.
-	 */
-	@Test
-	public void testArithmeticSolving() {
-		Context ctx = new Context();
+    /**
+     * Check the satisfiability of two floating-point expression.
+     */
+    @Test
+    public void testArithmeticSolving() {
+        Context ctx = new Context();
 
-		ArithExpr x = ctx.mkIntConst("x");
-		ArithExpr y = ctx.mkRealConst("y");
-		ArithExpr three = ctx.mkReal(3);
-		ArithExpr neg2 = ctx.mkReal(-2);
-		ArithExpr two_thirds = ctx.mkReal(2, 3);
-		ArithExpr three_y = ctx.mkMul(three, y);
-		ArithExpr diff = ctx.mkDiv(y, x);
-		BoolExpr x_geq_3y = ctx.mkGe(x, three_y);
-		BoolExpr x_leq_y = ctx.mkLe(x, y);
-		BoolExpr neg1_lt_x = ctx.mkLt(neg2, x);
-		BoolExpr assumptions = ctx.mkAnd(x_geq_3y, x_leq_y, neg1_lt_x);
+        IntExpr x = ctx.mkIntConst("x");
+        RealExpr xReal = ctx.mkInt2Real(x);
+        RealExpr y = ctx.mkRealConst("y");
+        RealExpr three = ctx.mkReal(3);
+        RealExpr neg2 = ctx.mkReal(-2);
+        RealExpr two_thirds = ctx.mkReal(2, 3);
+        ArithExpr<RealSort> three_y = ctx.mkMul(three, y);
+        ArithExpr<RealSort> y_over_x = ctx.mkDiv(y, xReal);
+        BoolExpr x_geq_3y = ctx.mkGe(xReal, three_y);
+        BoolExpr x_leq_y = ctx.mkLe(xReal, y);
+        BoolExpr neg1_lt_x = ctx.mkLt(neg2, xReal);
+        BoolExpr assumptions = ctx.mkAnd(x_geq_3y, x_leq_y, neg1_lt_x);
 
-		Solver solver = ctx.mkSolver();
-		solver.add(assumptions);
+        Solver solver = ctx.mkSolver();
+        solver.add(assumptions);
 
-		solver.push();
-		Expr diff_leq_two_thirds = ctx.mkLe(diff, two_thirds);
-		assertEquals(SATISFIABLE, solver.check(diff_leq_two_thirds));
-		solver.pop();
+        solver.push();
+        BoolExpr diff_leq_two_thirds = ctx.mkLe(y_over_x, two_thirds);
+        assertEquals(SATISFIABLE, solver.check(diff_leq_two_thirds));
+        solver.pop();
 
-		solver.push();
-		BoolExpr diff_is_two_thirds = ctx.mkEq(diff, two_thirds);
-		solver.add(diff_is_two_thirds);
-		assertEquals(SATISFIABLE, solver.check());
-		solver.pop();
-	}
+        solver.push();
+        BoolExpr diff_is_two_thirds = ctx.mkEq(y_over_x, two_thirds);
+        solver.add(diff_is_two_thirds);
+        assertEquals(SATISFIABLE, solver.check());
+        solver.pop();
+    }
 
-	/**
-	 * Check the satisfiability of a simple comparison.
-	 */
-	@Test
-	public void testSimpleSolving(){
-		Context ctx = new Context();
-		Solver solver = ctx.mkSolver();
+    /**
+     * Check the satisfiability of a simple comparison.
+     */
+    @Test
+    public void testSimpleSolving() {
+        Context ctx = new Context();
+        Solver solver = ctx.mkSolver();
 
-		ArithExpr x = ctx.mkIntConst("x");
-		ArithExpr c = ctx.mkInt(15);
-		BoolExpr b = ctx.mkGt(x, c);
-		assertEquals(SATISFIABLE, solver.check(b));
+        IntExpr x = ctx.mkIntConst("x");
+        IntExpr c = ctx.mkInt(15);
+        BoolExpr b = ctx.mkGt(x, c);
+        assertEquals(SATISFIABLE, solver.check(b));
 
-		Model m = solver.getModel();
-		Expr evaluated = m.evaluate(b, true);
-		assertTrue(evaluated.isTrue(), "The model should evaluate");
-	}
+        Model m = solver.getModel();
+        Expr<BoolSort> evaluated = m.evaluate(b, true);
+        assertTrue(evaluated.isTrue(), "The model should evaluate");
+    }
 }
