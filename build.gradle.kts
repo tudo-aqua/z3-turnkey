@@ -27,8 +27,8 @@ import de.undercouch.gradle.tasks.download.Download
 import org.gradle.api.JavaVersion.VERSION_1_8
 import org.gradle.api.tasks.testing.logging.TestLogEvent.FAILED
 import org.gradle.api.tasks.testing.logging.TestLogEvent.PASSED
-import org.gradle.api.tasks.testing.logging.TestLogEvent.STANDARD_ERROR
 import org.gradle.api.tasks.testing.logging.TestLogEvent.SKIPPED
+import org.gradle.api.tasks.testing.logging.TestLogEvent.STANDARD_ERROR
 import org.gradle.process.internal.ExecException
 import ru.vyarus.gradle.plugin.python.cmd.Python
 import java.io.ByteArrayOutputStream
@@ -121,7 +121,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath(group = "com.github.javaparser", name = "javaparser-core", version = "3.19.0")
+        classpath("com.github.javaparser", "javaparser-core", "3.19.0")
     }
 }
 
@@ -136,10 +136,10 @@ data class OSData(val os: String, val architecture: String, val extension: Strin
 
 /** The OS-CPU combinations Z3 distributions are available for. */
 val z3Architectures = mapOf(
-    "x64-osx-10.15.7" to OSData("osx", "amd64", "dylib"),
-    "x64-ubuntu-18.04" to OSData("linux", "amd64", "so"),
-    "x64-win" to OSData("windows", "amd64", "dll"),
-    "x86-win" to OSData("windows", "x86", "dll")
+        "x64-osx-10.15.7" to OSData("osx", "amd64", "dylib"),
+        "x64-ubuntu-18.04" to OSData("linux", "amd64", "so"),
+        "x64-win" to OSData("windows", "amd64", "dll"),
+        "x86-win" to OSData("windows", "x86", "dll")
 )
 
 
