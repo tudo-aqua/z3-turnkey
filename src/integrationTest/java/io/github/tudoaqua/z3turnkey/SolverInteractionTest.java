@@ -15,6 +15,7 @@
 package io.github.tudoaqua.z3turnkey;
 
 import com.microsoft.z3.ArithExpr;
+import com.microsoft.z3.BitVecSort;
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.BoolSort;
 import com.microsoft.z3.Context;
@@ -23,6 +24,7 @@ import com.microsoft.z3.IntExpr;
 import com.microsoft.z3.Model;
 import com.microsoft.z3.RealExpr;
 import com.microsoft.z3.RealSort;
+import com.microsoft.z3.SeqExpr;
 import com.microsoft.z3.Solver;
 import org.junit.jupiter.api.Test;
 
@@ -86,5 +88,22 @@ public class SolverInteractionTest {
         Model m = solver.getModel();
         Expr<BoolSort> evaluated = m.evaluate(b, true);
         assertTrue(evaluated.isTrue(), "The model should evaluate");
+    }
+
+    /**
+     * Check that expression concatenation operates correctly.
+     */
+    @Test
+    public void testConcat() {
+        Context ctx = new Context();
+        Solver solver = ctx.mkSolver();
+
+        SeqExpr<BitVecSort> x = ctx.mkString("x");
+        SeqExpr<BitVecSort> y = ctx.mkString("y");
+        SeqExpr<BitVecSort> xPlusY = ctx.mkConcat(x, y);
+        SeqExpr<BitVecSort> xy = ctx.mkString("xy");
+
+        BoolExpr b = ctx.mkEq(xPlusY, xy);
+        assertEquals(SATISFIABLE, solver.check(b));
     }
 }
