@@ -53,7 +53,7 @@ plugins {
 
 group = "io.github.tudo-aqua"
 
-val z3Version = "4.8.10"
+val z3Version = "4.8.12"
 val turnkeyVersion = ""
 version = "$z3Version$turnkeyVersion"
 
@@ -137,7 +137,7 @@ data class OSData(val os: String, val architecture: String, val extension: Strin
 /** The OS-CPU combinations Z3 distributions are available for. */
 val z3Architectures = mapOf(
         "x64-osx-10.15.7" to OSData("osx", "amd64", "dylib"),
-        "x64-ubuntu-18.04" to OSData("linux", "amd64", "so"),
+        "x64-glibc-2.31" to OSData("linux", "amd64", "so"),
         "x64-win" to OSData("windows", "amd64", "dll"),
         "x86-win" to OSData("windows", "x86", "dll")
 )
@@ -191,7 +191,6 @@ val copyNonGeneratedSources by tasks.registering {
         copy {
             from(sourceDir.resolve("src").resolve("api").resolve("java"))
             include("**/*.java")
-            exclude("**/Context.java")
             into(output.resolve(z3PackagePath))
         }
     }
@@ -276,51 +275,6 @@ val rewriteNativeJava by tasks.registering {
 }
 
 
-val rewriteContextJava by tasks.registering {
-    description = "Rewrite the Z3 API to use a correct signature (PR #4996)."
-    dependsOn(extractZ3Source)
-
-    val input = extractZ3Source.get().outputs.files.singleFile.toPath().resolve("z3-z3-$z3Version")
-    inputs.dir(input)
-    val output = buildDir.toPath().resolve("rewritten-context")
-    outputs.dir(output)
-
-    doLast {
-        val contextJava = input
-                .resolve("src").resolve("api").resolve("java")
-                .resolve("Context.java")
-        val parse = JavaParser().parse(contextJava)
-
-        val compilationUnit = parse.result.orElseThrow()
-        val nativeClass = compilationUnit.primaryType.orElseThrow()
-        val mkConcat = nativeClass.members
-                .filterIsInstance(MethodDeclaration::class.java)
-                .filter { it.nameAsString == "mkConcat" && it.parameters.size == 1 }
-                .first {
-                    val firstParameter = it.parameters[0]
-                    val firstParameterType = firstParameter.type
-                    firstParameter.isVarArgs
-                            && firstParameterType is ClassOrInterfaceType
-                            && firstParameterType.name.asString() == "SeqSort"
-                }
-
-        mkConcat.parameters[0].type = ClassOrInterfaceType(
-                null,
-                SimpleName("Expr"),
-                NodeList(ClassOrInterfaceType(
-                        null,
-                        SimpleName("SeqSort"),
-                        NodeList(TypeParameter("R"))
-                ))
-        )
-
-        val rewrittenContextJava = output.resolve(z3PackagePath).resolve("Context.java")
-        createDirectories(rewrittenContextJava.parent)
-        writeString(rewrittenContextJava, compilationUnit.toString())
-    }
-}
-
-
 z3Architectures.forEach { (arch, osData) ->
     tasks.register("downloadZ3Binary-$arch", Download::class) {
         description = "Download the Z3 binary distribution for $arch."
@@ -375,7 +329,7 @@ sourceSets {
     main {
         java {
             srcDirs(
-                    *listOf(copyNonGeneratedSources, mkConstsFiles, rewriteContextJava, rewriteNativeJava)
+                    *listOf(copyNonGeneratedSources, mkConstsFiles, rewriteNativeJava)
                             .map { it.get().outputs.files }.toTypedArray()
             )
         }
@@ -441,7 +395,7 @@ val integrationTestJar by tasks.registering(Jar::class) {
 
 
 // ensure correct build order
-tasks.compileJava.get().dependsOn(copyNonGeneratedSources, mkConstsFiles, rewriteContextJava, rewriteNativeJava)
+tasks.compileJava.get().dependsOn(copyNonGeneratedSources, mkConstsFiles, rewriteNativeJava)
 tasks.processResources.get().dependsOn(
         *z3Architectures.keys
                 .map { tasks.named("copyNativeLibraries-$it") }.toTypedArray()
