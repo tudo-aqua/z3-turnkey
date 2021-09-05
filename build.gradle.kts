@@ -522,7 +522,7 @@ license {
             files = project.files("build.gradle.kts", "settings.gradle.kts")
         }
         create("workflows") {
-            files = fileTree("${project.rootDir}/.github/workflows/")
+            files = fileTree("${project.projectDir}/.github/workflows/")
         }
         create("mainInternal") {
             files = project.sourceSets.main.get().allSource.filter { !it.startsWith(project.buildDir) }
