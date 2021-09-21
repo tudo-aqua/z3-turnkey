@@ -14,7 +14,7 @@
 
 name: License Check, Build and Multi-Platform Integration Test
 
-on: [ push, pull_request ]
+on: [ push, pull_request, workflow_dispatch ]
 
 jobs:
   check-license:
