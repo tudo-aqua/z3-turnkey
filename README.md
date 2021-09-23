@@ -84,6 +84,11 @@ Normally, Gradle will enforce a GPG signature on the artifacts. By setting the p
 enforcement is disabled:
 > ./gradlew -Pskip-signing assemble
 
+##### Releasing
+
+This project uses the `maven-pubish` plugin in combination with the `Gradle Nexus Publish Plugin`.
+To publis and autoclose a version, run `./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository`
+as one command. Due to [WIP in the Gradle Nexus Publish Plugin](https://github.com/gradle-nexus/publish-plugin/issues/19) this has to be run in conjunction for now.
 
 #### License
 
