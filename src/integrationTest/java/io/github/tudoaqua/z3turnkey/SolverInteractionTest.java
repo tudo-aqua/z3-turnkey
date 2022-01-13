@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2021 The Z3-TurnKey Authors
+ * Copyright 2019-2022 The Z3-TurnKey Authors
  * SPDX-License-Identifier: ISC
  *
  * Permission to use, copy, modify, and/or distribute this software for any purpose with or without fee is hereby
@@ -14,18 +14,7 @@
 
 package io.github.tudoaqua.z3turnkey;
 
-import com.microsoft.z3.ArithExpr;
-import com.microsoft.z3.BitVecSort;
-import com.microsoft.z3.BoolExpr;
-import com.microsoft.z3.BoolSort;
-import com.microsoft.z3.Context;
-import com.microsoft.z3.Expr;
-import com.microsoft.z3.IntExpr;
-import com.microsoft.z3.Model;
-import com.microsoft.z3.RealExpr;
-import com.microsoft.z3.RealSort;
-import com.microsoft.z3.SeqExpr;
-import com.microsoft.z3.Solver;
+import com.microsoft.z3.*;
 import org.junit.jupiter.api.Test;
 
 import static com.microsoft.z3.Status.SATISFIABLE;
@@ -98,10 +87,10 @@ public class SolverInteractionTest {
         Context ctx = new Context();
         Solver solver = ctx.mkSolver();
 
-        SeqExpr<BitVecSort> x = ctx.mkString("x");
-        SeqExpr<BitVecSort> y = ctx.mkString("y");
-        SeqExpr<BitVecSort> xPlusY = ctx.mkConcat(x, y);
-        SeqExpr<BitVecSort> xy = ctx.mkString("xy");
+        SeqExpr<CharSort> x = ctx.mkString("x");
+        SeqExpr<CharSort> y = ctx.mkString("y");
+        SeqExpr<CharSort> xPlusY = ctx.mkConcat(x, y);
+        SeqExpr<CharSort> xy = ctx.mkString("xy");
 
         BoolExpr b = ctx.mkEq(xPlusY, xy);
         assertEquals(SATISFIABLE, solver.check(b));

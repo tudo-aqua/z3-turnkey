@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2021 The Z3-TurnKey Authors
+ * Copyright 2019-2022 The Z3-TurnKey Authors
  * SPDX-License-Identifier: ISC
  *
  * Permission to use, copy, modify, and/or distribute this software for any purpose with or without fee is hereby
@@ -53,7 +53,7 @@ plugins {
 
 group = "io.github.tudo-aqua"
 
-val z3Version = "4.8.12"
+val z3Version = "4.8.13"
 val turnkeyVersion = ""
 version = "$z3Version$turnkeyVersion"
 
@@ -136,7 +136,7 @@ data class OSData(val os: String, val architecture: String, val extension: Strin
 
 /** The OS-CPU combinations Z3 distributions are available for. */
 val z3Architectures = mapOf(
-        "x64-osx-10.15.7" to OSData("osx", "amd64", "dylib"),
+        "x64-osx-10.16" to OSData("osx", "amd64", "dylib"),
         "x64-glibc-2.31" to OSData("linux", "amd64", "so"),
         "x64-win" to OSData("windows", "amd64", "dll"),
         "x86-win" to OSData("windows", "x86", "dll")

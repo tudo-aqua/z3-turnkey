@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2021 The Z3-TurnKey Authors
+ * Copyright 2019-2022 The Z3-TurnKey Authors
  * SPDX-License-Identifier: ISC
  *
  * Permission to use, copy, modify, and/or distribute this software for any purpose with or without fee is hereby
@@ -30,7 +30,7 @@ public class Z3LoaderTest {
     @Test
     public void testLoading() {
         String version = Native.getFullVersion();
-        assertTrue(version.contains("4.8.12"), "The loaded lib should be in the right version");
+        assertTrue(version.contains("4.8.13"), "The loaded lib should be in the right version");
     }
 
 }
