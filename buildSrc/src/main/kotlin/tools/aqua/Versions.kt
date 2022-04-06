@@ -12,4 +12,20 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-rootProject.name = "z3-turnkey"
+package tools.aqua
+
+import java.util.Locale.ROOT
+
+/** Keywords that indicate a stable version, independent of other version elements. */
+private val stableKeyword = listOf("RELEASE", "FINAL", "GA")
+
+/** A regular expression recognizing "usual" stable versions. */
+private val regex = "^[0-9,.v-]+(-r)?$".toRegex()
+
+/** Checks if this string appears to represent a stable version. */
+val String.isStable: Boolean
+  get() = stableKeyword.any { uppercase(ROOT).contains(it) } || regex.matches(this)
+
+/** Checks if this string does not appear to represent a stable version. */
+val String.isUnstable: Boolean
+  get() = isStable.not()

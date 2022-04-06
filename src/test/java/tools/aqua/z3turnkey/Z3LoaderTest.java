@@ -11,5 +11,20 @@
  * AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
  * PERFORMANCE OF THIS SOFTWARE.
  */
+package tools.aqua.z3turnkey;
 
-rootProject.name = "z3-turnkey"
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import com.microsoft.z3.Native;
+import org.junit.jupiter.api.Test;
+
+/** Test that Z3 native methods can successfully be invoked. */
+public class Z3LoaderTest {
+
+  /** Invoke the {@link Native#getFullVersion} method from Z3. */
+  @Test
+  public void testLoading() {
+    String version = Native.getFullVersion();
+    assertTrue(version.contains("4.8.15"), "The loaded lib should be in the right version");
+  }
+}

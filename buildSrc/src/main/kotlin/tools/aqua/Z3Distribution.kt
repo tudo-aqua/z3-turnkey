@@ -12,4 +12,22 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-rootProject.name = "z3-turnkey"
+package tools.aqua
+
+/**
+ * Metadata for a downloadable Z3 distribution.
+ * @param nameInTasks the CamelCase name to use in derived Gradle tasks.
+ * @param nameInDownload the name used in the downloaded file's name.
+ * @param operatingSystem the operating system's canonical name.
+ * @param cpuArchitecture the CPU architecture's canonical name.
+ * @param libraryExtension the file name extension used by the Z3 libraries.
+ * @param needsInstallNameTool true if `install_name_tool` must be used to repair the linkage.
+ */
+data class Z3Distribution(
+    val nameInTasks: String,
+    val nameInDownload: String,
+    val operatingSystem: String,
+    val cpuArchitecture: String,
+    val libraryExtension: String,
+    val needsInstallNameTool: Boolean = false,
+)

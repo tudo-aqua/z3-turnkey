@@ -12,4 +12,16 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-rootProject.name = "z3-turnkey"
+plugins { kotlin("jvm") version "1.6.20" }
+
+repositories {
+  gradlePluginPortal()
+  mavenCentral()
+}
+
+dependencies {
+  implementation("commons-io", "commons-io", "2.11.0")
+  implementation("com.github.javaparser", "javaparser-core", "3.24.2")
+  implementation("ru.vyarus", "gradle-use-python-plugin", "2.3.0")
+  compileOnly(gradleKotlinDsl())
+}

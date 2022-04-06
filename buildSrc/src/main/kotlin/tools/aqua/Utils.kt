@@ -12,25 +12,13 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-package io.github.tudoaqua.z3turnkey;
+package tools.aqua
 
-import com.microsoft.z3.Native;
-import org.junit.jupiter.api.Test;
+/** Transform a Java package name into the corresponding file path. */
+fun String.packagePath(): String = replace(".", "/")
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+/** The Z3 root package. */
+const val Z3_PACKAGE: String = "com.microsoft.z3"
 
-/**
- * Test that Z3 native methods can successfully be invoked.
- */
-public class Z3LoaderTest {
-
-    /**
-     * Invoke the #getFullVersion method from Z3.
-     */
-    @Test
-    public void testLoading() {
-        String version = Native.getFullVersion();
-        assertTrue(version.contains("4.8.14"), "The loaded lib should be in the right version");
-    }
-
-}
+/** The Z3 root package's path. */
+val Z3_PACKAGE_PATH: String = Z3_PACKAGE.packagePath()

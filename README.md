@@ -1,6 +1,6 @@
-[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/tudo-aqua/z3-turnkey/License%20Check,%20Build%20and%20Multi-Platform%20Integration%20Test)](https://github.com/tudo-aqua/z3-turnkey/actions)
-[![JavaDoc](https://javadoc.io/badge2/io.github.tudo-aqua/z3-turnkey/javadoc.svg)](https://javadoc.io/doc/io.github.tudo-aqua/z3-turnkey)
-[![Maven Central](https://img.shields.io/maven-central/v/io.github.tudo-aqua/z3-turnkey?logo=apache-maven)](https://search.maven.org/artifact/io.github.tudo-aqua/z3-turnkey)
+[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/tudo-aqua/z3-turnkey/License%20Check%20and%20Multi-Platform%20Test)](https://github.com/tudo-aqua/z3-turnkey/actions)
+[![JavaDoc](https://javadoc.io/badge2/tools.aqua/z3-turnkey/javadoc.svg)](https://javadoc.io/doc/tools.aqua/z3-turnkey)
+[![Maven Central](https://img.shields.io/maven-central/v/tools.aqua/z3-turnkey?logo=apache-maven)](https://search.maven.org/artifact/tools.aqua/z3-turnkey)
 ### The Z3-TurnKey Distribution
 
 [The Z3 Theorem Prover](https://github.com/Z3Prover/z3/) is a widely used SMT solver that is written in C and C++. The
@@ -19,6 +19,14 @@ be preferable to have a Java artifact that
 1. ships its own native libraries,
 2. can use them without administrative privileges, and
 3. can be obtained using [Maven](https://maven.apache.org/).
+
+#### Usage
+
+The artifact is intended as a drop-in replacement for the unpublished Z3 JAR. If your project works with the latter, it
+should continue to work after substituting `z3-turnkey`. The artifact is published via Maven Central. To use it with
+your preferred build management system, you can use a snippet from the
+[Maven Central Repository Search](https://search.maven.org/artifact/tools.aqua/z3-turnkey) by selecting the correct
+version.
 
 #### How?
 
@@ -50,13 +58,7 @@ Python 3 can be acquired as follows:
   > brew install python
 - Linux users should install the Python package provided by their distribution. Most likely, it is already present.
 
-Python 3 is discovered by the build script as follows:
-1. If the project parameter `python` is set, its value is used.
-2. Else, `python3` is tried and used if it exists and refers to a Python 3 interpreter. This should be the case on Linux
-   and OS X.
-3. Else, `python` is tried and used if it exists and refers to a Python 3 interpreter. This should be the case on
-   Windows.
-4. Else, the build fails.
+Python 3 is discovered by the build script using [https://github.com/xvik/gradle-use-python-plugin].
 
 ##### `install_name_tool`
 
