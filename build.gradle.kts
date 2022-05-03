@@ -12,6 +12,7 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
+import com.diffplug.gradle.spotless.FormatExtension
 import com.diffplug.gradle.spotless.KotlinExtension
 import com.diffplug.gradle.spotless.KotlinGradleExtension
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
@@ -229,14 +230,12 @@ tasks {
 spotless {
   java {
     target("src/main/java", "src/test/java") // do not reformat Z3!
-    licenseHeaderFile(rootProject.file("contrib/license-header.java")).also {
-      it.updateYearWithLatest(true)
-    }
+    licenseHeaderFile(file("contrib/license-header.java")).also { it.updateYearWithLatest(true) }
     googleJavaFormat()
   }
   kotlinGradle {
     licenseHeaderFile(
-            rootProject.file("contrib/license-header.kt"),
+            file("contrib/license-header.kt"),
             "(import |@file|plugins |dependencyResolutionManagement|rootProject.name)")
         .also { it.updateYearWithLatest(true) }
     ktfmt()
@@ -244,7 +243,7 @@ spotless {
   format("kotlinBuildSrc", KotlinExtension::class.java) {
     target("buildSrc/src/*/kotlin/**/*.kt")
     licenseHeaderFile(
-            rootProject.file("contrib/license-header.kt"),
+            file("contrib/license-header.kt"),
         )
         .also { it.updateYearWithLatest(true) }
     ktfmt()
@@ -252,10 +251,16 @@ spotless {
   format("kotlinGradleBuildSrc", KotlinGradleExtension::class.java) {
     target("buildSrc/*.gradle.kts", "buildSrc/src/*/kotlin/**/*.gradle.kts")
     licenseHeaderFile(
-            rootProject.file("contrib/license-header.kt"),
+            file("contrib/license-header.kt"),
             "(import |@file|plugins |dependencyResolutionManagement|rootProject.name)")
         .also { it.updateYearWithLatest(true) }
     ktfmt()
+  }
+  format("githubWorkflows", FormatExtension::class.java) {
+    target(".github/workflows/*.yml")
+    licenseHeaderFile(file("contrib/license-header.yml"), "name:").also {
+      it.updateYearWithLatest(true)
+    }
   }
 }
 
