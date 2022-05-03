@@ -72,4 +72,5 @@ jobs:
       - name: Run tests
         uses: gradle/gradle-build-action@v2
         with:
+          # Set install_name_tool to true on non-mac platforms, syntax from https://github.community/t/18114/4
           arguments: test ${{ fromJSON('["-Pinstall_name_tool=true", ""]')[startsWith(matrix.os, 'macos')] }}
