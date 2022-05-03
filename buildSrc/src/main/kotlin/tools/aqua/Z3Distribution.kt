@@ -14,20 +14,50 @@
 
 package tools.aqua
 
+import java.net.URL
+
 /**
  * Metadata for a downloadable Z3 distribution.
  * @param nameInTasks the CamelCase name to use in derived Gradle tasks.
- * @param nameInDownload the name used in the downloaded file's name.
+ * @param downloadURL the URL used to download the distribution.
  * @param operatingSystem the operating system's canonical name.
  * @param cpuArchitecture the CPU architecture's canonical name.
  * @param libraryExtension the file name extension used by the Z3 libraries.
  * @param needsInstallNameTool true if `install_name_tool` must be used to repair the linkage.
  */
-data class Z3Distribution(
-    val nameInTasks: String,
-    val nameInDownload: String,
-    val operatingSystem: String,
-    val cpuArchitecture: String,
-    val libraryExtension: String,
-    val needsInstallNameTool: Boolean = false,
-)
+interface Z3Distribution {
+  val nameInTasks: String
+  fun downloadURL(version: String): URL
+  fun libraryPath(version: String): String
+  val operatingSystem: String
+  val cpuArchitecture: String
+  val libraryExtension: String
+  val needsInstallNameTool: Boolean
+}
+
+data class SelfBuiltZ3Distribution(
+    override val nameInTasks: String,
+    val downloadName: String,
+    override val operatingSystem: String,
+    override val cpuArchitecture: String,
+    override val libraryExtension: String
+) : Z3Distribution {
+  override fun downloadURL(version: String): URL =
+      URL("https://github.com/tudo-aqua/z3-builds/releases/download/$version/z3-$downloadName.zip")
+  override fun libraryPath(version: String): String = "z3/build"
+  override val needsInstallNameTool: Boolean = operatingSystem == "osx"
+}
+
+data class OfficialZ3Distribution(
+    override val nameInTasks: String,
+    val downloadName: String,
+    override val operatingSystem: String,
+    override val cpuArchitecture: String,
+    override val libraryExtension: String
+) : Z3Distribution {
+  override fun downloadURL(version: String): URL =
+      URL(
+          "https://github.com/Z3Prover/z3/releases/download/z3-$version/z3-$version-$downloadName.zip")
+  override fun libraryPath(version: String): String = "z3-$version-$downloadName/bin"
+  override val needsInstallNameTool: Boolean = operatingSystem == "osx"
+}

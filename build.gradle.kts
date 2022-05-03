@@ -24,7 +24,8 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent.SKIPPED
 import org.gradle.api.tasks.testing.logging.TestLogEvent.STANDARD_ERROR
 import tools.aqua.InstallNameToolTask
 import tools.aqua.NativeRewriter
-import tools.aqua.Z3Distribution
+import tools.aqua.OfficialZ3Distribution
+import tools.aqua.SelfBuiltZ3Distribution
 import tools.aqua.Z3GeneratorTask
 import tools.aqua.Z3_PACKAGE
 import tools.aqua.Z3_PACKAGE_PATH
@@ -52,10 +53,11 @@ version = "$z3Version$turnkeyVersion"
 
 val z3Distributions =
     listOf(
-        Z3Distribution("MacOSAmd64", "x64-osx-10.16", "osx", "amd64", "dylib", true),
-        Z3Distribution("LinuxAmd64", "x64-glibc-2.31", "linux", "amd64", "so"),
-        Z3Distribution("WinAmd64", "x64-win", "windows", "amd64", "dll"),
-        Z3Distribution("WinX86", "x86-win", "windows", "x86", "dll"),
+        SelfBuiltZ3Distribution("MacOSAArch64", "osx", "osx", "aarch64", "dylib"),
+        OfficialZ3Distribution("MacOSAmd64", "x64-osx-10.16", "osx", "amd64", "dylib"),
+        OfficialZ3Distribution("LinuxAmd64", "x64-glibc-2.31", "linux", "amd64", "so"),
+        OfficialZ3Distribution("WinAmd64", "x64-win", "windows", "amd64", "dll"),
+        OfficialZ3Distribution("WinX86", "x86-win", "windows", "x86", "dll"),
     )
 
 val downloadZ3Source by
@@ -120,56 +122,62 @@ val rewriteNativeJava by
     }
 
 val copyNativeLibs =
-    z3Distributions.map { (taskName, downloadName, os, arch, extension, needsINT) ->
+    z3Distributions.map { z3 ->
       val download =
-          tasks.register("downloadZ3Binary$taskName", Download::class) {
-            description = "Download the Z3 binary distribution for $taskName."
+          tasks.register("downloadZ3Binary${z3.nameInTasks}", Download::class) {
+            description = "Download the Z3 binary distribution for ${z3.nameInTasks}."
 
-            src(
-                "https://github.com/Z3Prover/z3/releases/download/z3-$z3Version/z3-$z3Version-$downloadName.zip")
-            dest(buildDir.resolve("binary-archives/z3-$z3Version-$downloadName.zip"))
+            src(z3.downloadURL(z3Version))
+            dest(buildDir.resolve("binary-archives/z3${z3.nameInTasks}.zip"))
             overwrite(false)
             quiet(true)
           }
 
       val extract =
-          tasks.register("extractZ3Binary$taskName", Copy::class) {
-            description = "Extract the Z3 binary distribution for $taskName."
+          tasks.register("extractZ3Binary${z3.nameInTasks}", Copy::class) {
+            description = "Extract the Z3 binary distribution for ${z3.nameInTasks}."
 
             from(zipTree(download.map { it.dest }))
-            include("**/libz3.$extension", "**/libz3java.$extension")
+            include(
+                "${z3.libraryPath(z3Version)}/libz3.${z3.libraryExtension}",
+                "${z3.libraryPath(z3Version)}/libz3java.${z3.libraryExtension}")
             eachFile { path = name }
 
-            into(buildDir.resolve("unpacked-binaries/$downloadName"))
+            into(buildDir.resolve("unpacked-binaries/z3${z3.nameInTasks}"))
           }
 
       val java =
-          if (needsINT) {
+          if (z3.needsInstallNameTool) {
             tasks
-                .register("fixZ3JavaSearchPath$taskName", InstallNameToolTask::class) {
-                  description = "Fix the search path for the Z3Java native library for $taskName."
+                .register("fixZ3JavaSearchPath${z3.nameInTasks}", InstallNameToolTask::class) {
+                  description =
+                      "Fix the search path for the Z3Java native library for ${z3.nameInTasks}."
 
                   sourceFile.set(
                       layout.file(
-                          extract.map { it.destinationDir.resolve("libz3java.$extension") }))
+                          extract.map {
+                            it.destinationDir.resolve("libz3java.${z3.libraryExtension}")
+                          }))
                   installNameToolName.set(
                       provider { project.properties["install_name_tool"]?.toString() })
-                  libraryChanges.put("libz3.${extension}", "@loader_path/libz3.${extension}")
-                  outputDirectory.set(buildDir.resolve("fixed-binaries/$downloadName"))
+                  libraryChanges.put(
+                      "libz3.${z3.libraryExtension}", "@loader_path/libz3.${z3.libraryExtension}")
+                  outputDirectory.set(buildDir.resolve("fixed-binaries/z3${z3.nameInTasks}"))
                 }
                 .flatMap { it.outputDirectory.asFile }
           } else {
             extract.map { it.destinationDir }
           }
 
-      tasks.register("copyNativeLibraries$taskName", Copy::class) {
-        description = "Copy the Z3 native libraries for $taskName to the correct directory layout."
+      tasks.register("copyNativeLibraries${z3.nameInTasks}", Copy::class) {
+        description =
+            "Copy the Z3 native libraries for ${z3.nameInTasks} to the correct directory layout."
 
         from(
-            extract.map { it.destinationDir.resolve("libz3.$extension") },
-            java.map { it.resolve("libz3java.$extension") })
-        eachFile { path = "native/$os-$arch/$path" }
-        into(buildDir.resolve("native-libs/$downloadName"))
+            extract.map { it.destinationDir.resolve("libz3.${z3.libraryExtension}") },
+            java.map { it.resolve("libz3java.${z3.libraryExtension}") })
+        eachFile { path = "native/${z3.operatingSystem}-${z3.cpuArchitecture}/$path" }
+        into(buildDir.resolve("native-libs/z3${z3.nameInTasks}"))
       }
     }
 

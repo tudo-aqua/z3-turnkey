@@ -128,7 +128,9 @@ final class Z3Loader {
     /** Intel/AMD 32 bit. */
     X86("x86"),
     /** Intel/AMD 64 bit. */
-    AMD64("amd64");
+    AMD64("amd64"),
+    /** ARMv8 64 bit. */
+    AARCH64("aarch64");
 
     /** The directory name used for the OS's libraries. */
     final String name;
@@ -159,6 +161,8 @@ final class Z3Loader {
         case "amd64":
         case "x86_64":
           return AMD64;
+        case "aarch64":
+          return AARCH64;
         default:
           throw new UnsatisfiedLinkError("Unsupported CPU architecture: " + osArch);
       }
