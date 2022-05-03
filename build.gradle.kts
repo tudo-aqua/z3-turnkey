@@ -37,10 +37,10 @@ plugins {
   `maven-publish`
   signing
 
-  id("com.diffplug.spotless") version "6.4.1"
+  id("com.diffplug.spotless") version "6.5.1"
   id("com.dorongold.task-tree") version "2.1.0"
   id("com.github.ben-manes.versions") version "0.42.0"
-  id("de.undercouch.download") version "5.0.4"
+  id("de.undercouch.download") version "5.0.5"
   id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
 }
 

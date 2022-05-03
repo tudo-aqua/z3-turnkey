@@ -33,8 +33,7 @@ private fun rewriteNative(source: Reader): Reader {
   val compilationUnit = parse.result.orElseThrow(::NoSuchElementException)
   val nativeClass = compilationUnit.types.single { it.name.id == "Native" }
   val staticInitializer =
-      nativeClass
-          .members
+      nativeClass.members
           .filterIsInstance(InitializerDeclaration::class.java)
           .first(InitializerDeclaration::isStatic)
   staticInitializer.body = BlockStmt(NodeList(ExpressionStmt(MethodCallExpr("Z3Loader.loadZ3"))))
