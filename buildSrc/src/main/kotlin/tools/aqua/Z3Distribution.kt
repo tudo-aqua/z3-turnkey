@@ -16,25 +16,25 @@ package tools.aqua
 
 import java.net.URL
 
-/**
- * Metadata for a downloadable Z3 distribution.
- * @param nameInTasks the CamelCase name to use in derived Gradle tasks.
- * @param downloadURL the URL used to download the distribution.
- * @param operatingSystem the operating system's canonical name.
- * @param cpuArchitecture the CPU architecture's canonical name.
- * @param libraryExtension the file name extension used by the Z3 libraries.
- * @param needsInstallNameTool true if `install_name_tool` must be used to repair the linkage.
- */
+/** Metadata for a downloadable Z3 distribution. */
 interface Z3Distribution {
+  /** The CamelCase name to use in derived Gradle tasks. */
   val nameInTasks: String
+  /** The URL used to download the distribution for version [version]. */
   fun downloadURL(version: String): URL
+  /** The path to the library files inside the artifact for version [version]. */
   fun libraryPath(version: String): String
+  /** The operating system's canonical name. */
   val operatingSystem: String
+  /** The CPU architecture's canonical name. */
   val cpuArchitecture: String
+  /** The file name extension used by the Z3 libraries. */
   val libraryExtension: String
+  /** True if `install_name_tool` must be used to repair the linkage. */
   val needsInstallNameTool: Boolean
 }
 
+/** Self-built Z3 distribution. */
 data class SelfBuiltZ3Distribution(
     override val nameInTasks: String,
     val downloadName: String,
@@ -45,9 +45,10 @@ data class SelfBuiltZ3Distribution(
   override fun downloadURL(version: String): URL =
       URL("https://github.com/tudo-aqua/z3-builds/releases/download/$version/z3-$downloadName.zip")
   override fun libraryPath(version: String): String = "z3/build"
-  override val needsInstallNameTool: Boolean = operatingSystem == "osx"
+  override val needsInstallNameTool: Boolean = false
 }
 
+/** Z3-built Z3 distribution. */
 data class OfficialZ3Distribution(
     override val nameInTasks: String,
     val downloadName: String,
