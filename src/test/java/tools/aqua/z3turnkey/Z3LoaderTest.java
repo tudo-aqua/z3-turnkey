@@ -25,6 +25,7 @@ public class Z3LoaderTest {
   @Test
   public void testLoading() {
     String version = Native.getFullVersion();
-    assertTrue(version.contains("4.8.15"), "The loaded lib should be in the right version");
+    String expectedVersion = System.getProperty("expectedZ3Version");
+    assertTrue(version.contains(expectedVersion), "The loaded lib should report the expected version");
   }
 }

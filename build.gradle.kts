@@ -217,7 +217,8 @@ tasks {
 
   test {
     useJUnitPlatform()
-    setForkEvery(1)
+    systemProperty("expectedZ3Version", z3Version)
+    setForkEvery(1) // for hook tests
     testLogging { events(FAILED, STANDARD_ERROR, SKIPPED, PASSED) }
   }
 
