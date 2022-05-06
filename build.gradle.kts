@@ -230,7 +230,7 @@ tasks {
 
 spotless {
   java {
-    target("src/main/java", "src/test/java") // do not reformat Z3!
+    target("src/*/java/**/*.java") // do not reformat Z3!
     licenseHeaderFile(file("contrib/license-header.java")).also { it.updateYearWithLatest(true) }
     googleJavaFormat()
   }

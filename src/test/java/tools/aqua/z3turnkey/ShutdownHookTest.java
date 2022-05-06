@@ -11,6 +11,7 @@
  * AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
  * PERFORMANCE OF THIS SOFTWARE.
  */
+
 package tools.aqua.z3turnkey;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;

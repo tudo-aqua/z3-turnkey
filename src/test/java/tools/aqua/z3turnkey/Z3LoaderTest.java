@@ -11,6 +11,7 @@
  * AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
  * PERFORMANCE OF THIS SOFTWARE.
  */
+
 package tools.aqua.z3turnkey;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -26,6 +27,7 @@ public class Z3LoaderTest {
   public void testLoading() {
     String version = Native.getFullVersion();
     String expectedVersion = System.getProperty("expectedZ3Version");
-    assertTrue(version.contains(expectedVersion), "The loaded lib should report the expected version");
+    assertTrue(
+        version.contains(expectedVersion), "The loaded lib should report the expected version");
   }
 }
