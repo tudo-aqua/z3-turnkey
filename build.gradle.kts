@@ -223,8 +223,11 @@ tasks {
   }
 
   javadoc {
-    // disable doclint -- the Z3 JavaDoc contains invalid HTML5.
-    (options as? StandardJavadocDocletOptions)?.addBooleanOption("Xdoclint:none", true)
+    (options as? StandardJavadocDocletOptions)?.apply {
+      // disable doclint -- the Z3 JavaDoc contains invalid HTML5.
+      addBooleanOption("Xdoclint:none", true)
+      links("https://docs.oracle.com/en/java/javase/17/docs/api/")
+    }
   }
 }
 
