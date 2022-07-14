@@ -12,7 +12,7 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-plugins { kotlin("jvm") version "1.6.20" }
+plugins { kotlin("jvm") version "1.7.10" }
 
 repositories {
   gradlePluginPortal()
