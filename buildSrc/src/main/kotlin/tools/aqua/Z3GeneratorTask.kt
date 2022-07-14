@@ -14,23 +14,30 @@
 
 package tools.aqua
 
+import javax.inject.Inject
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
+import org.gradle.kotlin.dsl.property
 import ru.vyarus.gradle.plugin.python.cmd.Python
 
 /** Run the Z3 code generator scripts. */
-abstract class Z3GeneratorTask : DefaultTask() {
+abstract class Z3GeneratorTask @Inject constructor(objects: ObjectFactory) : DefaultTask() {
 
   /** The Z3 source checkout root. */
   @get:InputDirectory abstract val sourceDir: DirectoryProperty
 
   /** The name of the script to run, without the `.py` suffix. */
   @get:Input abstract val scriptName: Property<String>
+
+  /** Controls if the script requires the path to the Java API sources. */
+  @get:Input
+  val requiresJavaInput: Property<Boolean> = objects.property<Boolean>().convention(false)
 
   /**
    * The generated files' package. The scripts do not generate a correct hierarchy by themselves.
@@ -46,6 +53,18 @@ abstract class Z3GeneratorTask : DefaultTask() {
     val script = scriptName.flatMap { sourceDir.file("scripts/$it.py") }
     val packageOutputDir = outputDir.dir(Z3_PACKAGE_PATH)
 
+    val baseOptions =
+        listOf(
+            "--java-package-name",
+            Z3_PACKAGE,
+            "--java-output-dir",
+            packageOutputDir.get().toString())
+
+    val javaInputOptions =
+        if (requiresJavaInput.get())
+            listOf("--java-input-dir", sourceDir.dir("src/api/java").get().toString())
+        else emptyList<String>()
+
     val headers =
         sourceDir
             .dir("src/api")
@@ -57,15 +76,12 @@ abstract class Z3GeneratorTask : DefaultTask() {
             }
             .map { it.toString() }
 
-    val generatorOptions =
-        listOf(
-            "--java-package-name",
-            Z3_PACKAGE,
-            "--java-output-dir",
-            packageOutputDir.get().toString()) + headers
+    val generatorOptions = baseOptions + javaInputOptions + headers
 
     outputDir.dir(realOutputPackage.map { it.packagePath() }).get().asFile.mkdirs()
 
     Python(project).exec((listOf("-B", script.get()) + generatorOptions).toTypedArray())
   }
 }
+
+abstract class Z3

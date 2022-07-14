@@ -26,7 +26,6 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent.STANDARD_ERROR
 import tools.aqua.InstallNameToolTask
 import tools.aqua.NativeRewriter
 import tools.aqua.OfficialZ3Distribution
-import tools.aqua.SelfBuiltZ3Distribution
 import tools.aqua.Z3GeneratorTask
 import tools.aqua.Z3_PACKAGE
 import tools.aqua.Z3_PACKAGE_PATH
@@ -47,14 +46,14 @@ plugins {
 
 group = "tools.aqua"
 
-val z3Version = "4.8.17"
+val z3Version = "4.9.0"
 val turnkeyVersion = ""
 
 version = "$z3Version$turnkeyVersion"
 
 val z3Distributions =
     listOf(
-        SelfBuiltZ3Distribution("MacOSAArch64", "osx", "osx", "aarch64", "dylib"),
+        OfficialZ3Distribution("MacOSAArch64", "arm64-osx-11.0", "osx", "aarch64", "dylib"),
         OfficialZ3Distribution("MacOSAmd64", "x64-osx-10.16", "osx", "amd64", "dylib"),
         OfficialZ3Distribution("LinuxAmd64", "x64-glibc-2.31", "linux", "amd64", "so"),
         OfficialZ3Distribution("WinAmd64", "x64-win", "windows", "amd64", "dll"),
@@ -108,6 +107,7 @@ val updateAPI by
       sourceDir.set(
           layout.dir(extractZ3Source.map { it.destinationDir.resolve("z3-z3-$z3Version") }))
       scriptName.set("update_api")
+      requiresJavaInput.set(true)
       realOutputPackage.set(Z3_PACKAGE)
       outputDir.set(buildDir.resolve("generated-native"))
     }
