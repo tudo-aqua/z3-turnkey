@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2022 The Z3-TurnKey Authors
+ * Copyright 2019-2023 The Z3-TurnKey Authors
  * SPDX-License-Identifier: ISC
  *
  * Permission to use, copy, modify, and/or distribute this software for any purpose with or without fee is hereby
@@ -13,3 +13,5 @@
  */
 
 rootProject.name = "z3-turnkey"
+
+plugins { id("org.gradle.toolchains.foojay-resolver-convention") version "0.5.0" }

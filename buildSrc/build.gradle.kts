@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2022 The Z3-TurnKey Authors
+ * Copyright 2019-2023 The Z3-TurnKey Authors
  * SPDX-License-Identifier: ISC
  *
  * Permission to use, copy, modify, and/or distribute this software for any purpose with or without fee is hereby
@@ -12,7 +12,7 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-plugins { kotlin("jvm") version "1.7.10" }
+plugins { kotlin("jvm") version "1.8.21" }
 
 repositories {
   gradlePluginPortal()
@@ -21,7 +21,7 @@ repositories {
 
 dependencies {
   implementation("commons-io", "commons-io", "2.11.0")
-  implementation("com.github.javaparser", "javaparser-core", "3.24.2")
-  implementation("ru.vyarus", "gradle-use-python-plugin", "2.3.0")
+  implementation("com.github.javaparser", "javaparser-core", "3.25.3")
+  implementation("ru.vyarus", "gradle-use-python-plugin", "3.0.0")
   compileOnly(gradleKotlinDsl())
 }

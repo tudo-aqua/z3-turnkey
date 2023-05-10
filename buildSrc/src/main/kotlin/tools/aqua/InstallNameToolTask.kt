@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2022 The Z3-TurnKey Authors
+ * Copyright 2019-2023 The Z3-TurnKey Authors
  * SPDX-License-Identifier: ISC
  *
  * Permission to use, copy, modify, and/or distribute this software for any purpose with or without fee is hereby
@@ -37,6 +37,7 @@ import org.gradle.process.internal.ExecException
 
 /**
  * Runs `install_name_tool`, the library linkage update tool for MacOS.
+ *
  * @param exec interface for starting processes.
  * @param fs interface for file system operations.
  */
@@ -102,29 +103,33 @@ constructor(private val exec: ExecOperations, private val fs: FileOperations) : 
 
     val stdOut = StringWriter()
     val stdErr = StringWriter()
-    exec.exec {
-      it.commandLine =
-          listOf(installNameTool) +
-              idChangeCmd +
-              libraryChangeCmd +
-              rpathChangeCmd +
-              rpathAddCmd +
-              rpathDelCmd +
-              copiedFile
-      it.standardOutput = WriterOutputStream(stdOut, defaultCharset())
-      it.errorOutput = WriterOutputStream(stdErr, defaultCharset())
+    try {
+      exec.exec {
+        it.commandLine =
+            listOf(installNameTool) +
+                idChangeCmd +
+                libraryChangeCmd +
+                rpathChangeCmd +
+                rpathAddCmd +
+                rpathDelCmd +
+                copiedFile
+        it.standardOutput = WriterOutputStream(stdOut, defaultCharset())
+        it.errorOutput = WriterOutputStream(stdErr, defaultCharset())
+      }
+    } finally {
+      if (stdOut.buffer.isNotBlank()) logger.info("install_name_tool output: {}", stdOut)
+      if (stdErr.buffer.isNotBlank()) logger.error("install_name_tool error: {}", stdErr)
     }
-    if (stdOut.buffer.isNotBlank()) logger.info("install_name_tool output: {}", stdOut)
-    if (stdErr.buffer.isNotBlank()) logger.error("install_name_tool error: {}", stdErr)
   }
 
   /**
    * Try to find an installed `install_name_tool` on the system.
+   *
    * @return the name of the found tool.
    * @throws GradleException if no tool was found.
    */
   private fun findInstallNameTool(): String {
-    listOf("install_name_tool", "x86_64-apple-darwin-install_name_tool").forEach { candidate ->
+    listOf("install_name_tool", "llvm-install-name-tool").forEach { candidate ->
       try {
         exec.exec {
           it.commandLine = listOf(candidate)
@@ -132,8 +137,10 @@ constructor(private val exec: ExecOperations, private val fs: FileOperations) : 
           it.standardOutput = NULL_OUTPUT_STREAM
           it.errorOutput = NULL_OUTPUT_STREAM
         }
+        logger.info("install_name_tool search: $candidate accepted")
         return candidate
-      } catch (_: ExecException) {
+      } catch (e: ExecException) {
+        logger.info("install_name_tool search: $candidate rejected", e)
         // try the next one
       }
     }

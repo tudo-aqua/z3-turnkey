@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2022 The Z3-TurnKey Authors
+ * Copyright 2019-2023 The Z3-TurnKey Authors
  * SPDX-License-Identifier: ISC
  *
  * Permission to use, copy, modify, and/or distribute this software for any purpose with or without fee is hereby
@@ -17,12 +17,15 @@ import com.diffplug.gradle.spotless.KotlinExtension
 import com.diffplug.gradle.spotless.KotlinGradleExtension
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import de.undercouch.gradle.tasks.download.Download
-import org.gradle.api.JavaVersion.VERSION_1_8
 import org.gradle.api.publish.plugins.PublishingPlugin.PUBLISH_TASK_GROUP
 import org.gradle.api.tasks.testing.logging.TestLogEvent.FAILED
 import org.gradle.api.tasks.testing.logging.TestLogEvent.PASSED
 import org.gradle.api.tasks.testing.logging.TestLogEvent.SKIPPED
 import org.gradle.api.tasks.testing.logging.TestLogEvent.STANDARD_ERROR
+import org.gradle.jvm.toolchain.JvmVendorSpec.ADOPTIUM
+import org.gradle.jvm.toolchain.JvmVendorSpec.AZUL
+import org.gradle.jvm.toolchain.JvmVendorSpec.BELLSOFT
+import org.gradle.language.base.plugins.LifecycleBasePlugin.VERIFICATION_GROUP
 import tools.aqua.InstallNameToolTask
 import tools.aqua.NativeRewriter
 import tools.aqua.OfficialZ3Distribution
@@ -37,11 +40,11 @@ plugins {
   `maven-publish`
   signing
 
-  id("com.diffplug.spotless") version "6.8.0"
-  id("com.dorongold.task-tree") version "2.1.0"
-  id("com.github.ben-manes.versions") version "0.42.0"
-  id("de.undercouch.download") version "5.1.0"
-  id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
+  id("com.diffplug.spotless") version "6.18.0"
+  id("com.dorongold.task-tree") version "2.1.1"
+  id("com.github.ben-manes.versions") version "0.46.0"
+  id("de.undercouch.download") version "5.4.0"
+  id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
 }
 
 group = "tools.aqua"
@@ -199,34 +202,56 @@ sourceSets {
 repositories { mavenCentral() }
 
 dependencies {
-  testImplementation(platform("org.junit:junit-bom:5.8.2"))
+  testImplementation(platform("org.junit:junit-bom:5.9.3"))
   testImplementation("org.junit.jupiter", "junit-jupiter")
 }
 
 java {
-  sourceCompatibility = VERSION_1_8
-  targetCompatibility = VERSION_1_8
+  toolchain {
+    languageVersion.set(JavaLanguageVersion.of(8))
+    vendor.set(ADOPTIUM)
+  }
   withJavadocJar()
   withSourcesJar()
 }
 
 tasks {
   named("dependencyUpdates", DependencyUpdatesTask::class.java) {
+    gradleReleaseChannel = "current"
     rejectVersionIf { candidate.version.isUnstable && currentVersion.isStable }
   }
 
+  val platformTests =
+      listOf(8, 11, 17).map(JavaLanguageVersion::of).flatMap { testJDKVersion ->
+        listOf(ADOPTIUM, AZUL, BELLSOFT).map { testVendor ->
+          register<Test>(
+              "testOn${
+            testVendor.toString().lowercase().replaceFirstChar { it.uppercase() }
+          }${testJDKVersion}") {
+                group = VERIFICATION_GROUP
+                javaLauncher.set(
+                    project.javaToolchains.launcherFor {
+                      languageVersion.set(testJDKVersion)
+                      vendor.set(testVendor)
+                    })
+                useJUnitPlatform()
+                systemProperty("expectedZ3Version", z3Version)
+                forkEvery = 1 // for hook tests
+                testLogging { events(FAILED, STANDARD_ERROR, SKIPPED, PASSED) }
+              }
+        }
+      }
+
   test {
-    useJUnitPlatform()
-    systemProperty("expectedZ3Version", z3Version)
-    setForkEvery(1) // for hook tests
-    testLogging { events(FAILED, STANDARD_ERROR, SKIPPED, PASSED) }
+    dependsOn(*platformTests.toTypedArray())
+    exclude("*")
   }
 
   javadoc {
     (options as? StandardJavadocDocletOptions)?.apply {
       // disable doclint -- the Z3 JavaDoc contains invalid HTML5.
       addBooleanOption("Xdoclint:none", true)
-      links("https://docs.oracle.com/en/java/javase/17/docs/api/")
+      links("https://docs.oracle.com/javase/8/docs/api/")
     }
   }
 }
@@ -310,4 +335,4 @@ signing {
   sign(publishing.publications["maven"])
 }
 
-nexusPublishing { repositories { sonatype() } }
+nexusPublishing { this.repositories { sonatype() } }

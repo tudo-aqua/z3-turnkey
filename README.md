@@ -1,4 +1,4 @@
-[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/tudo-aqua/z3-turnkey/License%20Check%20and%20Multi-Platform%20Test)](https://github.com/tudo-aqua/z3-turnkey/actions)
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/tudo-aqua/z3-turnkey/test.yml?branch=master)](https://github.com/tudo-aqua/z3-turnkey/actions)
 [![JavaDoc](https://javadoc.io/badge2/tools.aqua/z3-turnkey/javadoc.svg)](https://javadoc.io/doc/tools.aqua/z3-turnkey)
 [![Maven Central](https://img.shields.io/maven-central/v/tools.aqua/z3-turnkey?logo=apache-maven)](https://search.maven.org/artifact/tools.aqua/z3-turnkey)
 ### The Z3-TurnKey Distribution
@@ -70,8 +70,8 @@ An `install_name_tool` can be acquired as follows:
 The `install_name_tool` binary is discovered as follows:
 1. If the project parameter `install_name_tool` is set, its value is used.
 2. Else, `install_name_tool` is tried and used if it exists. This should be the case on OS X.
-3. Else, `x86_64-apple-darwin-install_name_tool` is tried and used if it exists. This should be the case for Linux with
-   cctools-port.
+3. Else, `llvm-install-name-tool` is tried and used if it exists. This should be the case on other OSes with LLVM 
+   installed.
 4. Else, the build fails.
 
 Without an `install_name_tool`, a build can be created by setting the parameter to the `true` application. However, the

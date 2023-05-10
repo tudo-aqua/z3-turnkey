@@ -1,5 +1,5 @@
 #
-# Copyright 2019-2022 The Z3-TurnKey Authors
+# Copyright 2019-2023 The Z3-TurnKey Authors
 # SPDX-License-Identifier: ISC
 #
 # Permission to use, copy, modify, and/or distribute this software for any purpose with or without fee is hereby
@@ -17,7 +17,7 @@ name: License Check and Multi-Platform Test
 on: [ push, pull_request, workflow_dispatch ]
 
 env:
-  JDK_VERSION: 11
+  JDK_VERSION: 17
 
 jobs:
   safety-check:
@@ -25,7 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Validate Gradle artifacts
         uses: gradle/wrapper-validation-action@v1
@@ -35,11 +35,11 @@ jobs:
     needs: safety-check
     runs-on: ubuntu-latest
     steps:
-      - name: Initial Setup
-        uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v3
 
       - name: Set up JDK
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
           distribution: temurin
           java-version: ${{ env.JDK_VERSION }}
@@ -49,28 +49,39 @@ jobs:
         uses: gradle/gradle-build-action@v2
         with:
           arguments: spotlessCheck
+
   test:
-    name: JUnit Test on ${{ matrix.os }} for ${{ matrix.jdk }} version ${{ matrix.jdk-version }}
+    name: JUnit Test on ${{ matrix.os }}
     needs: safety-check
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ macos-latest, ubuntu-latest, windows-latest ]
-        jdk: [ liberica, temurin, zulu ]
-        jdk-version: [ 8, 11, 17 ]
-      fail-fast: false # Ensure we get all failures on other platforms
+      fail-fast: false # Ensure we get all failures on all affected platforms
     steps:
-      - name: Initial Setup
-        uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v3
 
       - name: Set up JDK
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
           distribution: temurin
-          java-version: ${{ matrix.jdk-version }}
+          java-version: ${{ env.JDK_VERSION }}
+
+      - name: Identify install_name_tool name on Ubuntu
+        if: ${{ startsWith(matrix.os, 'ubuntu') }}
+        shell: bash
+        run: |
+          cd /usr/bin
+          tools=( llvm-install-name-tool-* )
+          echo "ORG_GRADLE_PROJECT_install_name_tool=${tools[-1]}" >> "${GITHUB_ENV}"
+
+      - name: Disable install_name_tool on Windows
+        if: ${{ startsWith(matrix.os, 'windows') }}
+        shell: bash
+        run: echo "ORG_GRADLE_PROJECT_install_name_tool=true" >> "${GITHUB_ENV}"
 
       - name: Run tests
         uses: gradle/gradle-build-action@v2
         with:
-          # Set install_name_tool to true on non-mac platforms, syntax from https://github.community/t/18114/4
-          arguments: test ${{ fromJSON('["-Pinstall_name_tool=true", ""]')[startsWith(matrix.os, 'macos')] }}
+          arguments: test
