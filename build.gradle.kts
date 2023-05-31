@@ -25,10 +25,13 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent.STANDARD_ERROR
 import org.gradle.jvm.toolchain.JvmVendorSpec.ADOPTIUM
 import org.gradle.jvm.toolchain.JvmVendorSpec.AZUL
 import org.gradle.jvm.toolchain.JvmVendorSpec.BELLSOFT
+import org.gradle.jvm.toolchain.JvmVendorSpec.GRAAL_VM
+import org.gradle.jvm.toolchain.JvmVendorSpec.MICROSOFT
 import org.gradle.language.base.plugins.LifecycleBasePlugin.VERIFICATION_GROUP
 import tools.aqua.InstallNameToolTask
 import tools.aqua.NativeRewriter
 import tools.aqua.OfficialZ3Distribution
+import tools.aqua.TestToolchain
 import tools.aqua.Z3GeneratorTask
 import tools.aqua.Z3_PACKAGE
 import tools.aqua.Z3_PACKAGE_PATH
@@ -62,6 +65,13 @@ val z3Distributions =
         OfficialZ3Distribution("WinAmd64", "x64-win", "windows", "amd64", "dll"),
         OfficialZ3Distribution("WinX86", "x86-win", "windows", "x86", "dll"),
     )
+
+val testToolchains =
+    listOf(8, 11, 17).map { TestToolchain("EclipseTemurin$it", it, ADOPTIUM) } +
+        listOf(8, 11, 17).map { TestToolchain("AzulZulu$it", it, AZUL) } +
+        listOf(8, 11, 17).map { TestToolchain("BellsoftLiberica$it", it, BELLSOFT) } +
+        listOf(8, 11, 17).map { TestToolchain("GraalVM$it", it, GRAAL_VM) } +
+        listOf(11, 17).map { TestToolchain("MicrosoftOpenJDK$it", it, MICROSOFT) }
 
 val downloadZ3Source by
     tasks.registering(Download::class) {
@@ -222,23 +232,18 @@ tasks {
   }
 
   val platformTests =
-      listOf(8, 11, 17).map(JavaLanguageVersion::of).flatMap { testJDKVersion ->
-        listOf(ADOPTIUM, AZUL, BELLSOFT).map { testVendor ->
-          register<Test>(
-              "testOn${
-            testVendor.toString().lowercase().replaceFirstChar { it.uppercase() }
-          }${testJDKVersion}") {
-                group = VERIFICATION_GROUP
-                javaLauncher.set(
-                    project.javaToolchains.launcherFor {
-                      languageVersion.set(testJDKVersion)
-                      vendor.set(testVendor)
-                    })
-                useJUnitPlatform()
-                systemProperty("expectedZ3Version", z3Version)
-                forkEvery = 1 // for hook tests
-                testLogging { events(FAILED, STANDARD_ERROR, SKIPPED, PASSED) }
-              }
+      testToolchains.map { (name, jvmVersion, jvmVendor) ->
+        register<Test>("testOn$name") {
+          group = VERIFICATION_GROUP
+          javaLauncher.set(
+              project.javaToolchains.launcherFor {
+                languageVersion.set(jvmVersion)
+                vendor.set(jvmVendor)
+              })
+          useJUnitPlatform()
+          systemProperty("expectedZ3Version", z3Version)
+          forkEvery = 1 // for hook tests
+          testLogging { events(FAILED, STANDARD_ERROR, SKIPPED, PASSED) }
         }
       }
 
