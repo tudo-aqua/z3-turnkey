@@ -95,6 +95,7 @@ final class Z3Loader {
 
     /** The directory name used for the OS's libraries. */
     final String name;
+
     /** The file name extension for dynamic libraries defined by the OS. */
     final String libraryExtension;
 

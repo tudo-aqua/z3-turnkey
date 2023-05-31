@@ -40,7 +40,7 @@ plugins {
   `maven-publish`
   signing
 
-  id("com.diffplug.spotless") version "6.18.0"
+  id("com.diffplug.spotless") version "6.19.0"
   id("com.dorongold.task-tree") version "2.1.1"
   id("com.github.ben-manes.versions") version "0.46.0"
   id("de.undercouch.download") version "5.4.0"

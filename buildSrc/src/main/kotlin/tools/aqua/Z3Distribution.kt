@@ -44,7 +44,9 @@ data class SelfBuiltZ3Distribution(
 ) : Z3Distribution {
   override fun downloadURL(version: String): URL =
       URL("https://github.com/tudo-aqua/z3-builds/releases/download/$version/z3-$downloadName.zip")
+
   override fun libraryPath(version: String): String = "z3/build"
+
   override val needsInstallNameTool: Boolean = false
 }
 
@@ -59,6 +61,8 @@ data class OfficialZ3Distribution(
   override fun downloadURL(version: String): URL =
       URL(
           "https://github.com/Z3Prover/z3/releases/download/z3-$version/z3-$version-$downloadName.zip")
+
   override fun libraryPath(version: String): String = "z3-$version-$downloadName/bin"
+
   override val needsInstallNameTool: Boolean = operatingSystem == "osx"
 }
