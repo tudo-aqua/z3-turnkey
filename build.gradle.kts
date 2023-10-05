@@ -291,9 +291,9 @@ spotless {
         .also { it.updateYearWithLatest(true) }
     ktfmt()
   }
-  format("githubWorkflows", FormatExtension::class.java) {
-    target(".github/workflows/*.yml")
-    licenseHeaderFile(file("contrib/license-header.yml"), "name:").also {
+  format("github", FormatExtension::class.java) {
+    target(".github/**/*.yml")
+    licenseHeaderFile(file("contrib/license-header.yml"), "[a-z]+:").also {
       it.updateYearWithLatest(true)
     }
   }
