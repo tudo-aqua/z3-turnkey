@@ -12,7 +12,7 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-plugins { kotlin("jvm") version "1.8.21" }
+plugins { kotlin("jvm") version "1.9.10" }
 
 repositories {
   gradlePluginPortal()
@@ -20,8 +20,8 @@ repositories {
 }
 
 dependencies {
-  implementation("commons-io", "commons-io", "2.11.0")
-  implementation("com.github.javaparser", "javaparser-core", "3.25.3")
+  implementation("commons-io", "commons-io", "2.14.0")
+  implementation("com.github.javaparser", "javaparser-core", "3.25.5")
   implementation("ru.vyarus", "gradle-use-python-plugin", "3.0.0")
   compileOnly(gradleKotlinDsl())
 }

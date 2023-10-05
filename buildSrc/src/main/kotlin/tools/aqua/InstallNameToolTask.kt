@@ -15,9 +15,8 @@
 package tools.aqua
 
 import java.io.StringWriter
-import java.nio.charset.Charset.defaultCharset
 import javax.inject.Inject
-import org.apache.commons.io.output.NullOutputStream.NULL_OUTPUT_STREAM
+import org.apache.commons.io.output.NullOutputStream
 import org.apache.commons.io.output.WriterOutputStream
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
@@ -113,8 +112,8 @@ constructor(private val exec: ExecOperations, private val fs: FileOperations) : 
                 rpathAddCmd +
                 rpathDelCmd +
                 copiedFile
-        it.standardOutput = WriterOutputStream(stdOut, defaultCharset())
-        it.errorOutput = WriterOutputStream(stdErr, defaultCharset())
+        it.standardOutput = WriterOutputStream.builder().setWriter(stdOut).get()
+        it.errorOutput = WriterOutputStream.builder().setWriter(stdErr).get()
       }
     } finally {
       if (stdOut.buffer.isNotBlank()) logger.info("install_name_tool output: {}", stdOut)
@@ -134,8 +133,8 @@ constructor(private val exec: ExecOperations, private val fs: FileOperations) : 
         exec.exec {
           it.commandLine = listOf(candidate)
           it.isIgnoreExitValue = true
-          it.standardOutput = NULL_OUTPUT_STREAM
-          it.errorOutput = NULL_OUTPUT_STREAM
+          it.standardOutput = NullOutputStream.INSTANCE
+          it.errorOutput = NullOutputStream.INSTANCE
         }
         logger.info("install_name_tool search: $candidate accepted")
         return candidate

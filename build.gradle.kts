@@ -43,10 +43,10 @@ plugins {
   `maven-publish`
   signing
 
-  id("com.diffplug.spotless") version "6.19.0"
+  id("com.diffplug.spotless") version "6.22.0"
   id("com.dorongold.task-tree") version "2.1.1"
-  id("com.github.ben-manes.versions") version "0.46.0"
-  id("de.undercouch.download") version "5.4.0"
+  id("com.github.ben-manes.versions") version "0.48.0"
+  id("de.undercouch.download") version "5.5.0"
   id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
 }
 
@@ -78,7 +78,7 @@ val downloadZ3Source by
       description = "Download the Z3 source archive."
 
       src("https://github.com/Z3Prover/z3/archive/z3-$z3Version/z3-$z3Version.zip")
-      dest(buildDir.resolve("source-archive/z3-$z3Version.zip"))
+      dest(layout.buildDirectory.file("source-archive/z3-$z3Version.zip"))
       overwrite(false)
       quiet(true)
     }
@@ -88,7 +88,7 @@ val extractZ3Source by
       description = "Extract the Z3 source archive."
 
       from(zipTree(downloadZ3Source.map { it.dest }))
-      into(buildDir.resolve("unpacked-source"))
+      into(layout.buildDirectory.dir("unpacked-source"))
     }
 
 val copyNonGeneratedSources by
@@ -99,7 +99,7 @@ val copyNonGeneratedSources by
       include("**/*.java")
       eachFile { path = "$Z3_PACKAGE_PATH/$path" }
 
-      into(buildDir.resolve("non-generated-sources"))
+      into(layout.buildDirectory.dir("non-generated-sources"))
     }
 
 val mkConstsFiles by
@@ -110,7 +110,7 @@ val mkConstsFiles by
           layout.dir(extractZ3Source.map { it.destinationDir.resolve("z3-z3-$z3Version") }))
       scriptName.set("mk_consts_files")
       realOutputPackage.set("$Z3_PACKAGE.enumerations")
-      outputDir.set(buildDir.resolve("generated-enumerations"))
+      outputDir.set(layout.buildDirectory.dir("generated-enumerations"))
     }
 
 val updateAPI by
@@ -122,7 +122,7 @@ val updateAPI by
       scriptName.set("update_api")
       requiresJavaInput.set(true)
       realOutputPackage.set(Z3_PACKAGE)
-      outputDir.set(buildDir.resolve("generated-native"))
+      outputDir.set(layout.buildDirectory.dir("generated-native"))
     }
 
 val rewriteNativeJava by
@@ -132,7 +132,7 @@ val rewriteNativeJava by
       from(updateAPI.flatMap { it.outputDir })
       include("$Z3_PACKAGE_PATH/Native.java")
       filter(NativeRewriter::class)
-      into(buildDir.resolve("rewritten-native"))
+      into(layout.buildDirectory.dir("rewritten-native"))
     }
 
 val copyNativeLibs =
@@ -142,7 +142,7 @@ val copyNativeLibs =
             description = "Download the Z3 binary distribution for ${z3.nameInTasks}."
 
             src(z3.downloadURL(z3Version))
-            dest(buildDir.resolve("binary-archives/z3${z3.nameInTasks}.zip"))
+            dest(layout.buildDirectory.file("binary-archives/z3${z3.nameInTasks}.zip"))
             overwrite(false)
             quiet(true)
           }
@@ -157,7 +157,7 @@ val copyNativeLibs =
                 "${z3.libraryPath(z3Version)}/libz3java.${z3.libraryExtension}")
             eachFile { path = name }
 
-            into(buildDir.resolve("unpacked-binaries/z3${z3.nameInTasks}"))
+            into(layout.buildDirectory.dir("unpacked-binaries/z3${z3.nameInTasks}"))
           }
 
       val java =
@@ -176,7 +176,8 @@ val copyNativeLibs =
                       provider { project.properties["install_name_tool"]?.toString() })
                   libraryChanges.put(
                       "libz3.${z3.libraryExtension}", "@loader_path/libz3.${z3.libraryExtension}")
-                  outputDirectory.set(buildDir.resolve("fixed-binaries/z3${z3.nameInTasks}"))
+                  outputDirectory.set(
+                      layout.buildDirectory.dir("fixed-binaries/z3${z3.nameInTasks}"))
                 }
                 .flatMap { it.outputDirectory.asFile }
           } else {
@@ -191,7 +192,7 @@ val copyNativeLibs =
             extract.map { it.destinationDir.resolve("libz3.${z3.libraryExtension}") },
             java.map { it.resolve("libz3java.${z3.libraryExtension}") })
         eachFile { path = "native/${z3.operatingSystem}-${z3.cpuArchitecture}/$path" }
-        into(buildDir.resolve("native-libs/z3${z3.nameInTasks}"))
+        into(layout.buildDirectory.dir("native-libs/z3${z3.nameInTasks}"))
       }
     }
 
@@ -212,7 +213,7 @@ sourceSets {
 repositories { mavenCentral() }
 
 dependencies {
-  testImplementation(platform("org.junit:junit-bom:5.9.3"))
+  testImplementation(platform("org.junit:junit-bom:5.10.0"))
   testImplementation("org.junit.jupiter", "junit-jupiter")
 }
 
