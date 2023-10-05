@@ -68,10 +68,10 @@ val z3Distributions =
 
 val testToolchains =
     listOf(8, 11, 17).map { TestToolchain("EclipseTemurin$it", it, ADOPTIUM) } +
-        listOf(8, 11, 17).map { TestToolchain("AzulZulu$it", it, AZUL) } +
-        listOf(8, 11, 17).map { TestToolchain("BellsoftLiberica$it", it, BELLSOFT) } +
-        listOf(8, 11, 17).map { TestToolchain("GraalVM$it", it, GRAAL_VM) } +
-        listOf(11, 17).map { TestToolchain("MicrosoftOpenJDK$it", it, MICROSOFT) }
+        listOf(8, 11, 17, 21).map { TestToolchain("AzulZulu$it", it, AZUL) } +
+        listOf(8, 11, 17, 21).map { TestToolchain("BellsoftLiberica$it", it, BELLSOFT) } +
+        listOf(8, 11, 17, 21).map { TestToolchain("GraalVM$it", it, GRAAL_VM) } +
+        listOf(11, 17, 21).map { TestToolchain("MicrosoftOpenJDK$it", it, MICROSOFT) }
 
 val downloadZ3Source by
     tasks.registering(Download::class) {
