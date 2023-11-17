@@ -45,7 +45,7 @@ plugins {
 
   id("com.diffplug.spotless") version "6.22.0"
   id("com.dorongold.task-tree") version "2.1.1"
-  id("com.github.ben-manes.versions") version "0.49.0"
+  id("com.github.ben-manes.versions") version "0.50.0"
   id("de.undercouch.download") version "5.5.0"
   id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
 }
