@@ -52,15 +52,15 @@ plugins {
 
 group = "tools.aqua"
 
-val z3Version = "4.12.2"
-val turnkeyVersion = ".1"
+val z3Version = "4.12.3"
+val turnkeyVersion = ""
 
 version = "$z3Version$turnkeyVersion"
 
 val z3Distributions =
     listOf(
         OfficialZ3Distribution("MacOSAArch64", "arm64-osx-11.0", "osx", "aarch64", "dylib"),
-        OfficialZ3Distribution("MacOSAmd64", "x64-osx-10.16", "osx", "amd64", "dylib"),
+        OfficialZ3Distribution("MacOSAmd64", "x64-osx-11.7.10", "osx", "amd64", "dylib"),
         OfficialZ3Distribution("LinuxAmd64", "x64-glibc-2.31", "linux", "amd64", "so"),
         OfficialZ3Distribution("WinAmd64", "x64-win", "windows", "amd64", "dll"),
         OfficialZ3Distribution("WinX86", "x86-win", "windows", "x86", "dll"),
