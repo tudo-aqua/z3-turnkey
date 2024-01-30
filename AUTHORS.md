@@ -1,6 +1,6 @@
 ### The Z3-TurnKey Authors
 
-Z3-TurnKey is maintained by the [AQUA Working Group](http://aqua.engineering/) at TU Dortmund University.
+Z3-TurnKey is maintained by the [AQUA Group](https://aqua.engineering/) at TU Dortmund University.
 
 #### Active Contributors
 

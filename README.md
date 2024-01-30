@@ -65,7 +65,7 @@ Python 3 is discovered by the build script using [https://github.com/xvik/gradle
 An `install_name_tool` can be acquired as follows:
 - Windows users will need to experiment with Cygwin/MinGW or Docker.
 - OS X already ships an `install_name_tool`.
-- Linux users can install a port from the [cctools-port](https://github.com/tpoechtrager/cctools-port/) project. 
+- Linux users can use the version shipped by LLVM. 
 
 The `install_name_tool` binary is discovered as follows:
 1. If the project parameter `install_name_tool` is set, its value is used.
