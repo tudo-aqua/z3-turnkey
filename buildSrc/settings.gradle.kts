@@ -12,16 +12,6 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-plugins { embeddedKotlin("jvm") }
-
-repositories {
-  gradlePluginPortal()
-  mavenCentral()
-}
-
-dependencies {
-  implementation(libs.commons.io)
-  implementation(libs.gradle.usePython)
-  implementation(libs.javaparser)
-  compileOnly(gradleKotlinDsl())
+dependencyResolutionManagement {
+  versionCatalogs { create("libs") { from(files("../gradle/libs.versions.toml")) } }
 }
