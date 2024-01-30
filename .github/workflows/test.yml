@@ -51,11 +51,11 @@ jobs:
           distribution: temurin
           java-version: ${{ env.JDK_VERSION }}
 
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v3
+
       - name: Run Spotless checks
-        id: spotlessCheck
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: spotlessCheck
+        run: ./gradlew spotlessCheck
 
   test:
     name: JUnit Test on ${{ matrix.os }}
@@ -75,6 +75,9 @@ jobs:
           distribution: temurin
           java-version: ${{ env.JDK_VERSION }}
 
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v3
+
       - name: Identify install_name_tool name on Ubuntu
         if: ${{ startsWith(matrix.os, 'ubuntu') }}
         shell: bash
@@ -89,6 +92,4 @@ jobs:
         run: echo "ORG_GRADLE_PROJECT_install_name_tool=true" >> "${GITHUB_ENV}"
 
       - name: Run tests
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: test
+        run: ./gradlew test
