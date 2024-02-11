@@ -17,6 +17,7 @@ import com.diffplug.gradle.spotless.KotlinExtension
 import com.diffplug.gradle.spotless.KotlinGradleExtension
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import de.undercouch.gradle.tasks.download.Download
+import org.glavo.mic.tasks.CompileModuleInfo
 import org.gradle.api.file.DuplicatesStrategy.EXCLUDE
 import org.gradle.api.plugins.BasePlugin.BUILD_GROUP
 import org.gradle.api.publish.plugins.PublishingPlugin.PUBLISH_TASK_GROUP
@@ -46,6 +47,7 @@ plugins {
   signing
 
   alias(libs.plugins.download)
+  alias(libs.plugins.moduleInfo)
   alias(libs.plugins.nexusPublish)
   alias(libs.plugins.spotless)
   alias(libs.plugins.taskTree)
@@ -238,6 +240,14 @@ tasks {
   named("dependencyUpdates", DependencyUpdatesTask::class.java) {
     gradleReleaseChannel = "current"
     rejectVersionIf { candidate.version.isUnstable && currentVersion.isStable }
+  }
+
+  // compileJava { exclude("module-info.java") }
+
+  javadoc { exclude("module-info.java") }
+
+  named<CompileModuleInfo>("compileModuleInfo") {
+    targetFile = layout.buildDirectory.file("classes/META-INF/versions/9")
   }
 
   val platformTests =
