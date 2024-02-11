@@ -53,6 +53,11 @@ jobs:
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v3
+        with:
+          build-scan-publish: true
+          build-scan-terms-of-service-url: "https://gradle.com/terms-of-service"
+          build-scan-terms-of-service-agree: "yes"
+          dependency-graph: generate-and-submit
 
       - name: Run Spotless checks
         run: ./gradlew spotlessCheck
@@ -73,6 +78,11 @@ jobs:
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v3
+        with:
+          build-scan-publish: true
+          build-scan-terms-of-service-url: "https://gradle.com/terms-of-service"
+          build-scan-terms-of-service-agree: "yes"
+          dependency-graph: generate-and-submit
 
       - name: Identify install_name_tool name
         shell: bash
@@ -137,7 +147,7 @@ jobs:
           ${prefix} java -DexpectedZ3Version="${z3version}" \
                          -jar z3-turnkey-*-test-runner.jar \
                          execute --fail-if-no-tests \
-                                 --select-package tools.aqua.z3turnkey
+                                 --select-package tools.aqua.z3turnkey \
                                  --reports-dir test-results
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v4
