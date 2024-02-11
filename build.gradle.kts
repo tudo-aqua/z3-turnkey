@@ -231,6 +231,10 @@ java {
 }
 
 tasks {
+  val versionFile by registering {
+    doLast { layout.buildDirectory.file("z3.version").get().asFile.writeText(z3Version) }
+  }
+
   named("dependencyUpdates", DependencyUpdatesTask::class.java) {
     gradleReleaseChannel = "current"
     rejectVersionIf { candidate.version.isUnstable && currentVersion.isStable }

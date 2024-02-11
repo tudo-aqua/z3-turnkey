@@ -83,14 +83,16 @@ jobs:
 
       - name: Build Test Runner Jar
         run: |
-          ./gradlew testRunner
-          cp build/libs/z3-turnkey-*-test-runner.jar .
+          ./gradlew testRunner versionFile
+          cp build/z3.version build/libs/z3-turnkey-*-test-runner.jar .
 
       - name: Upload Test Runner Jar
         uses: actions/upload-artifact@v4
         with:
           name: test-runner
-          path: z3-turnkey-*-test-runner.jar
+          path: |
+            z3-turnkey-*-test-runner.jar
+            z3.version
 
   test:
     strategy:
@@ -123,7 +125,7 @@ jobs:
       - name: Run tests
         shell: bash
         run: |
-          z3version="$(echo z3-turnkey-*-test-runner.jar | sed 's/z3-turnkey-\(.*\)-test-runner\.jar/\1/')"
+          z3version="$(cat z3.version)"
           prefix=""
           if ! command -v arch &> /dev/null; then
             case "${{ matrix.architecture }}" in
