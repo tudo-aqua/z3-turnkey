@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.microsoft.z3.Native;
 import org.junit.jupiter.api.Test;
+import org.opentest4j.TestAbortedException;
 
 /** Test that Z3 native methods can successfully be invoked. */
 public class Z3LoaderTest {
@@ -27,7 +28,11 @@ public class Z3LoaderTest {
   public void testLoading() {
     String version = Native.getFullVersion();
     String expectedVersion = System.getProperty("expectedZ3Version");
+    if (expectedVersion == null) {
+      throw new TestAbortedException("Z3 version not passed as property");
+    }
     assertTrue(
-        version.contains(expectedVersion), "The loaded lib should report the expected version");
+        version.contains(expectedVersion),
+        "The loaded lib should report the expected version '" + expectedVersion + "'");
   }
 }
