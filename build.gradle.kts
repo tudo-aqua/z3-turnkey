@@ -17,6 +17,8 @@ import com.diffplug.gradle.spotless.KotlinExtension
 import com.diffplug.gradle.spotless.KotlinGradleExtension
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import de.undercouch.gradle.tasks.download.Download
+import org.gradle.api.file.DuplicatesStrategy.EXCLUDE
+import org.gradle.api.plugins.BasePlugin.BUILD_GROUP
 import org.gradle.api.publish.plugins.PublishingPlugin.PUBLISH_TASK_GROUP
 import org.gradle.api.tasks.testing.logging.TestLogEvent.FAILED
 import org.gradle.api.tasks.testing.logging.TestLogEvent.PASSED
@@ -212,7 +214,12 @@ sourceSets {
 
 repositories { mavenCentral() }
 
-dependencies { testImplementation(libs.junit.jupiter) }
+val testJar by configurations.registering { extendsFrom(configurations.testRuntimeClasspath.get()) }
+
+dependencies {
+  testImplementation(libs.junit.jupiter)
+  testJar(libs.junit.console)
+}
 
 java {
   toolchain {
@@ -249,6 +256,24 @@ tasks {
     dependsOn(*platformTests.toTypedArray())
     exclude("*")
   }
+
+  val testRunner by
+      registering(Jar::class) {
+        group = BUILD_GROUP
+
+        destinationDirectory = layout.buildDirectory.dir("libs")
+        archiveClassifier = "test-runner"
+
+        from(
+            compileJava.map { it.destinationDirectory },
+            sourceSets.main.map { it.resources.sourceDirectories },
+            compileTestJava.map { it.destinationDirectory },
+            sourceSets.test.map { it.resources.sourceDirectories },
+            testJar.map { cp -> cp.files.map { if (it.isDirectory()) it else zipTree(it) } },
+        )
+        duplicatesStrategy = EXCLUDE
+        manifest { attributes["Main-Class"] = "org.junit.platform.console.ConsoleLauncher" }
+      }
 
   javadoc {
     (options as? StandardJavadocDocletOptions)?.apply {
