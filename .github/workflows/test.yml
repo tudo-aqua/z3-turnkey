@@ -57,14 +57,10 @@ jobs:
       - name: Run Spotless checks
         run: ./gradlew spotlessCheck
 
-  test:
-    name: JUnit Test on ${{ matrix.os }}
+  test-runner:
+    name: Build JUnit Test Runner
     needs: safety-check
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ macos-latest, ubuntu-latest, windows-latest ]
-      fail-fast: false # Ensure we get all failures on all affected platforms
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -78,18 +74,72 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v3
 
-      - name: Identify install_name_tool name on Ubuntu
-        if: ${{ startsWith(matrix.os, 'ubuntu') }}
+      - name: Identify install_name_tool name
         shell: bash
         run: |
           cd /usr/bin
           tools=( llvm-install-name-tool-* )
           echo "ORG_GRADLE_PROJECT_install_name_tool=${tools[-1]}" >> "${GITHUB_ENV}"
 
-      - name: Disable install_name_tool on Windows
-        if: ${{ startsWith(matrix.os, 'windows') }}
-        shell: bash
-        run: echo "ORG_GRADLE_PROJECT_install_name_tool=true" >> "${GITHUB_ENV}"
+      - name: Build Test Runner Jar
+        run: |
+          ./gradlew testRunner
+          cp build/libs/z3-turnkey-*-test-runner.jar .
+
+      - name: Upload Test Runner Jar
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-runner
+          path: z3-turnkey-*-test-runner.jar
+
+  test:
+    strategy:
+      matrix:
+        os: [ macos-latest, ubuntu-latest, windows-latest ]
+        java-package: [ liberica, microsoft, temurin, zulu ]
+        java-version: [ 8, 11, 17, 21 ]
+        architecture: [ x64 ]
+        exclude:
+          - java-package: microsoft
+            java-version: 8
+      fail-fast: false # Ensure we get all failures on all affected platforms
+
+    name: JUnit Test on ${{ matrix.os }} and ${{ matrix.java-package }} version ${{ matrix.java-version }} for ${{ matrix.architecture }}
+    needs: test-runner
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Download Test Runner Jar
+        uses: actions/download-artifact@v4
+        with:
+          name: test-runner
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: ${{ matrix.java-package }}
+          java-version: ${{ matrix.java-version }}
+          architecture: ${{ matrix.architecture }}
 
       - name: Run tests
-        run: ./gradlew test
+        shell: bash
+        run: |
+          z3version="$(echo z3-turnkey-*-test-runner.jar | sed 's/z3-turnkey-\(.*\)-test-runner\.jar/\1/')"
+          prefix=""
+          if ! command -v arch &> /dev/null; then
+            case "${{ matrix.architecture }}" in
+              "aarch64") prefix="arch -arm64";;
+              "x64") prefix="arch -x86_64";;
+              *) echo "unknown architecture ${{ matrix.architecture }}"; exit 1;;
+            esac
+          fi
+          ${prefix} java -DexpectedZ3Version="${z3version}" \
+                         -jar z3-turnkey-*-test-runner.jar \
+                         execute --fail-if-no-tests \
+                                 --select-package tools.aqua.z3turnkey
+                                 --reports-dir test-results
+      - name: Publish Test Report
+        uses: mikepenz/action-junit-report@v4
+        if: always()
+        with:
+          require_tests: true
+          report_paths: 'test-results/*.xml'
