@@ -9,7 +9,7 @@ versions = { id = "com.github.ben-manes.versions", version = "0.51.0" }
 
 [libraries]
 
-commons-io = { group = "commons-io", name = "commons-io", version = "2.15.1" }
+commons-io = { group = "commons-io", name = "commons-io", version = "2.16.0" }
 gradle-usePython = { group = "ru.vyarus", name = "gradle-use-python-plugin", version = "3.0.0" }
 javaparser = { group = "com.github.javaparser", name = "javaparser-core", version = "3.25.9" }
 junit-console = { group = "org.junit.platform", name = "junit-platform-console", version = "1.10.2" }
