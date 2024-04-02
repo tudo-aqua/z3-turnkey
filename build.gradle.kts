@@ -56,7 +56,7 @@ plugins {
 
 group = "tools.aqua"
 
-val z3Version = "4.12.6"
+val z3Version = "4.13.0"
 val turnkeyVersion = ""
 
 version = "$z3Version$turnkeyVersion"
