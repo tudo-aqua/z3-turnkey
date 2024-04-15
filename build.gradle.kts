@@ -223,6 +223,16 @@ dependencies {
   testJar(libs.junit.console)
 }
 
+tasks {
+  val sourcesJar by
+      registering(Jar::class) {
+        group = BUILD_GROUP
+        from(sourceSets.main.map { it.allJava }, extractZ3Source.map { it.destinationDir })
+        archiveClassifier = DocsType.SOURCES
+      }
+  assemble { dependsOn(sourcesJar) }
+}
+
 java {
   toolchain {
     languageVersion.set(JavaLanguageVersion.of(8))
