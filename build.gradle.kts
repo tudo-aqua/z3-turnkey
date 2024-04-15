@@ -237,12 +237,10 @@ tasks {
     doLast { layout.buildDirectory.file("z3.version").get().asFile.writeText(z3Version) }
   }
 
-  named("dependencyUpdates", DependencyUpdatesTask::class.java) {
+  named<DependencyUpdatesTask>("dependencyUpdates") {
     gradleReleaseChannel = "current"
     rejectVersionIf { candidate.version.isUnstable && currentVersion.isStable }
   }
-
-  // compileJava { exclude("module-info.java") }
 
   javadoc { exclude("module-info.java") }
 
