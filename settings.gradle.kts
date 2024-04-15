@@ -15,13 +15,19 @@
 rootProject.name = "z3-turnkey"
 
 plugins {
-  id("com.gradle.enterprise") version "3.17.1"
+  id("com.gradle.develocity") version "3.17.1"
   id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
 }
 
-gradleEnterprise {
+develocity {
   buildScan {
-    termsOfServiceUrl = "https://gradle.com/terms-of-service"
-    termsOfServiceAgree = "yes"
+    val isCI = System.getenv("CI").isNullOrEmpty().not()
+    publishing.onlyIf { isCI }
+    if (isCI) {
+      tag("CI")
+      uploadInBackground = false
+      termsOfUseUrl = "https://gradle.com/help/legal-terms-of-use"
+      termsOfUseAgree = "yes"
+    }
   }
 }
