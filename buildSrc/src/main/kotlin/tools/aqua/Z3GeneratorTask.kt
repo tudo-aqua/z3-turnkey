@@ -25,6 +25,7 @@ import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 import org.gradle.kotlin.dsl.property
 import ru.vyarus.gradle.plugin.python.cmd.Python
+import ru.vyarus.gradle.plugin.python.cmd.env.SimpleEnvironment
 
 /** Run the Z3 code generator scripts. */
 abstract class Z3GeneratorTask @Inject constructor(objects: ObjectFactory) : DefaultTask() {
@@ -80,8 +81,7 @@ abstract class Z3GeneratorTask @Inject constructor(objects: ObjectFactory) : Def
 
     outputDir.dir(realOutputPackage.map { it.packagePath() }).get().asFile.mkdirs()
 
-    Python(project).exec((listOf("-B", script.get()) + generatorOptions).toTypedArray())
+    Python(SimpleEnvironment(project))
+        .exec((listOf("-B", script.get()) + generatorOptions).toTypedArray())
   }
 }
-
-abstract class Z3
