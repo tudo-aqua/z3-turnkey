@@ -138,7 +138,12 @@ jobs:
               *) echo "unknown architecture ${{ matrix.architecture }}"; exit 1;;
             esac
           fi
-          ${prefix} java -DexpectedZ3Version="${z3version}" \
+          module_options=""
+          if [ "${{ matrix.java-version }}" -gt 8 ]; then
+            module_options="--add-opens java.base/java.io=ALL-UNNAMED"
+          fi
+          ${prefix} java ${module_options} \
+                         -DexpectedZ3Version="${z3version}" \
                          -jar z3-turnkey-*-test-runner.jar \
                          execute --fail-if-no-tests \
                                  --select-package tools.aqua.z3turnkey \

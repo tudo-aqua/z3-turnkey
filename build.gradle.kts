@@ -265,6 +265,9 @@ tasks {
               }
           useJUnitPlatform()
           systemProperty("expectedZ3Version", z3Version)
+          if (jvmVersion.asInt() > 8) {
+            jvmArgs("--add-opens", "java.base/java.io=ALL-UNNAMED")
+          }
           forkEvery = 1 // for hook tests
           testLogging { events(FAILED, STANDARD_ERROR, SKIPPED, PASSED) }
         }
