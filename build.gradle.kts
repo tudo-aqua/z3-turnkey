@@ -110,23 +110,21 @@ val mkConstsFiles by
     tasks.registering(Z3GeneratorTask::class) {
       description = "Generate the Java source for Z3 enumerations."
 
-      sourceDir.set(
-          layout.dir(extractZ3Source.map { it.destinationDir.resolve("z3-z3-$z3Version") }))
-      scriptName.set("mk_consts_files")
-      realOutputPackage.set("$Z3_PACKAGE.enumerations")
-      outputDir.set(layout.buildDirectory.dir("generated-enumerations"))
+      sourceDir = layout.dir(extractZ3Source.map { it.destinationDir.resolve("z3-z3-$z3Version") })
+      scriptName = "mk_consts_files"
+      realOutputPackage = "$Z3_PACKAGE.enumerations"
+      outputDir = layout.buildDirectory.dir("generated-enumerations")
     }
 
 val updateAPI by
     tasks.registering(Z3GeneratorTask::class) {
       description = "Generate the Java source for the Z3 native binding."
 
-      sourceDir.set(
-          layout.dir(extractZ3Source.map { it.destinationDir.resolve("z3-z3-$z3Version") }))
-      scriptName.set("update_api")
-      requiresJavaInput.set(true)
-      realOutputPackage.set(Z3_PACKAGE)
-      outputDir.set(layout.buildDirectory.dir("generated-native"))
+      sourceDir = layout.dir(extractZ3Source.map { it.destinationDir.resolve("z3-z3-$z3Version") })
+      scriptName = "update_api"
+      requiresJavaInput = true
+      realOutputPackage = Z3_PACKAGE
+      outputDir = layout.buildDirectory.dir("generated-native")
     }
 
 val rewriteNativeJava by
@@ -171,17 +169,15 @@ val copyNativeLibs =
                   description =
                       "Fix the search path for the Z3Java native library for ${z3.nameInTasks}."
 
-                  sourceFile.set(
+                  sourceFile =
                       layout.file(
                           extract.map {
                             it.destinationDir.resolve("libz3java.${z3.libraryExtension}")
-                          }))
-                  installNameToolName.set(
-                      provider { project.properties["install_name_tool"]?.toString() })
+                          })
+                  installNameToolName = project.properties["install_name_tool"]?.toString()
                   libraryChanges.put(
                       "libz3.${z3.libraryExtension}", "@loader_path/libz3.${z3.libraryExtension}")
-                  outputDirectory.set(
-                      layout.buildDirectory.dir("fixed-binaries/z3${z3.nameInTasks}"))
+                  outputDirectory = layout.buildDirectory.dir("fixed-binaries/z3${z3.nameInTasks}")
                 }
                 .flatMap { it.outputDirectory.asFile }
           } else {
@@ -235,8 +231,8 @@ tasks {
 
 java {
   toolchain {
-    languageVersion.set(JavaLanguageVersion.of(8))
-    vendor.set(ADOPTIUM)
+    languageVersion = JavaLanguageVersion.of(8)
+    vendor = ADOPTIUM
   }
   withJavadocJar()
   withSourcesJar()
@@ -262,11 +258,11 @@ tasks {
       testToolchains.map { (name, jvmVersion, jvmVendor) ->
         register<Test>("testOn$name") {
           group = VERIFICATION_GROUP
-          javaLauncher.set(
+          javaLauncher =
               project.javaToolchains.launcherFor {
-                languageVersion.set(jvmVersion)
-                vendor.set(jvmVendor)
-              })
+                languageVersion = jvmVersion
+                vendor = jvmVendor
+              }
           useJUnitPlatform()
           systemProperty("expectedZ3Version", z3Version)
           forkEvery = 1 // for hook tests
@@ -348,31 +344,32 @@ publishing {
     create<MavenPublication>("maven") {
       from(components["java"])
       pom {
-        name.set("Z3-TurnKey")
-        description.set(
+        name = "Z3-TurnKey"
+        description =
             "A self-unpacking, standalone Z3 distribution that ships all required native support " +
-                "code and automatically unpacks it at runtime.")
-        url.set("https://github.com/tudo-aqua/z3-turnkey")
+                "code and automatically unpacks it at runtime."
+        url = "https://github.com/tudo-aqua/z3-turnkey"
         licenses {
           license {
-            name.set("The MIT License")
-            url.set("https://opensource.org/licenses/MIT")
+            name = "The MIT License"
+            url = "https://opensource.org/licenses/MIT"
           }
           license {
-            name.set("ISC License")
-            url.set("https://opensource.org/licenses/ISC")
+            name = "ISC License"
+            url = "https://opensource.org/licenses/ISC"
           }
         }
         developers {
           developer {
-            name.set("Simon Dierl")
-            email.set("simon.dierl@cs.tu-dortmund.de")
+            name = "Simon Dierl"
+            email = "simon.dierl@cs.tu-dortmund.de"
+            organization = "TU Dortmund University"
           }
         }
         scm {
-          connection.set("scm:git:git://github.com:tudo-aqua/z3-turnkey.git")
-          developerConnection.set("scm:git:ssh://git@github.com:tudo-aqua/z3-turnkey.git")
-          url.set("https://github.com/tudo-aqua/z3-turnkey/tree/master")
+          connection = "scm:git:git://github.com:tudo-aqua/z3-turnkey.git"
+          developerConnection = "scm:git:ssh://git@github.com:tudo-aqua/z3-turnkey.git"
+          url = "https://github.com/tudo-aqua/z3-turnkey/tree/master"
         }
       }
     }
