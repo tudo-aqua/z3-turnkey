@@ -11,6 +11,6 @@ versions = { id = "com.github.ben-manes.versions", version = "0.51.0" }
 
 commons-io = { group = "commons-io", name = "commons-io", version = "2.16.1" }
 gradle-usePython = { group = "ru.vyarus", name = "gradle-use-python-plugin", version = "4.0.0" }
-javaparser = { group = "com.github.javaparser", name = "javaparser-core", version = "3.25.10" }
+javaparser = { group = "com.github.javaparser", name = "javaparser-core", version = "3.26.0" }
 junit-console = { group = "org.junit.platform", name = "junit-platform-console", version = "1.10.2" }
 junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version = "5.10.2" }
