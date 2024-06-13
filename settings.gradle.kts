@@ -15,7 +15,7 @@
 rootProject.name = "z3-turnkey"
 
 plugins {
-  id("com.gradle.develocity") version "3.17.1"
+  id("com.gradle.develocity") version "3.17.5"
   id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
 }
 
