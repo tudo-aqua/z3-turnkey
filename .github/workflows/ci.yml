@@ -1,0 +1,112 @@
+#  SPDX-License-Identifier: Apache-2.0
+#
+#  Copyright 2019-2024 The TurnKey Authors
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+
+name: CI/CD
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-local:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - uses: gradle/actions/setup-gradle@v4
+      - run: |
+          ./gradlew build testRunner versionFile
+          cp build/z3.version build/libs/z3-turnkey-*-test-runner.jar .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: test-runner
+          path: |
+            z3-turnkey-*-test-runner.jar
+            z3.version
+
+  test:
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+        java-package: [liberica, microsoft, temurin, zulu]
+        java-version: [8, 11, 17, 21]
+        architecture: [x64]
+        exclude:
+          - java-package: microsoft
+            java-version: 8
+      fail-fast: false # Ensure we get all failures on all affected platforms
+
+    name: JUnit Test on ${{ matrix.os }} and ${{ matrix.java-package }} version ${{ matrix.java-version }} for ${{ matrix.architecture }}
+    needs: build-local
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: test-runner
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: ${{ matrix.java-package }}
+          java-version: ${{ matrix.java-version }}
+          architecture: ${{ matrix.architecture }}
+
+      - shell: bash
+        run: |
+          z3version="$(cat z3.version)"
+          prefix=""
+          if ! command -v arch &> /dev/null; then
+            case "${{ matrix.architecture }}" in
+              "aarch64") prefix="arch -arm64";;
+              "x64") prefix="arch -x86_64";;
+              *) echo "unknown architecture ${{ matrix.architecture }}"; exit 1;;
+            esac
+          fi
+          module_options=""
+          if [ "${{ matrix.java-version }}" -gt 8 ]; then
+            module_options="--add-opens java.base/java.io=ALL-UNNAMED"
+          fi
+          ${prefix} java ${module_options} \
+                         -DexpectedZ3Version="${z3version}" \
+                         -jar z3-turnkey-*-test-runner.jar \
+                         execute --fail-if-no-tests \
+                                 --select-package tools.aqua.turnkey.z3 \
+                                 --reports-dir test-results
+      - uses: mikepenz/action-junit-report@v4
+        if: always()
+        with:
+          require_tests: true
+          report_paths: "test-results/*.xml"
+
+  dependency-submission:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - uses: gradle/actions/dependency-submission@v4

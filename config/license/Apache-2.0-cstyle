@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: Apache-2.0
  *
- * Copyright 2019-2024 The TurnKey Authors
+ * Copyright 2019-$YEAR The TurnKey Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,29 +16,3 @@
  * limitations under the License.
  */
 
-rootProject.name = "z3-turnkey"
-
-pluginManagement {
-  repositories {
-    gradlePluginPortal()
-    mavenCentral()
-  }
-}
-
-plugins {
-  id("com.gradle.develocity") version "3.18.1"
-  id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
-}
-
-develocity {
-  buildScan {
-    val isCI = System.getenv("CI").isNullOrEmpty().not()
-    publishing.onlyIf { isCI }
-    if (isCI) {
-      tag("CI")
-      uploadInBackground = false
-      termsOfUseUrl = "https://gradle.com/help/legal-terms-of-use"
-      termsOfUseAgree = "yes"
-    }
-  }
-}

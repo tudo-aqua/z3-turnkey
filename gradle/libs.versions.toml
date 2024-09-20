@@ -1,16 +1,41 @@
+#  SPDX-License-Identifier: Apache-2.0
+#
+#  Copyright 2019-2024 The TurnKey Authors
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+
+[versions]
+
+prettier-toml = "2.0.1"
+
 [plugins]
 
 download = { id = "de.undercouch.download", version = "5.6.0" }
 moduleInfo = { id = "org.glavo.compile-module-info-plugin", version = "2.0" }
 nexusPublish = { id = "io.github.gradle-nexus.publish-plugin", version = "2.0.0" }
+node = { id = "com.github.node-gradle.node", version = "7.0.2" }
+spotbugs = { id = "com.github.spotbugs", version = "6.0.22" }
 spotless = { id = "com.diffplug.spotless", version = "6.25.0" }
-taskTree = { id = "com.dorongold.task-tree", version = "3.0.0" }
+taskTree = { id = "com.dorongold.task-tree", version = "4.0.0" }
+turnkey = { id = "tools.aqua.turnkey", version = "1.0.0" }
 versions = { id = "com.github.ben-manes.versions", version = "0.51.0" }
 
 [libraries]
 
-commons-io = { group = "commons-io", name = "commons-io", version = "2.16.1" }
+assertj = { group = "org.assertj", name = "assertj-core", version = "3.26.3" }
 gradle-usePython = { group = "ru.vyarus", name = "gradle-use-python-plugin", version = "4.0.0" }
-javaparser = { group = "com.github.javaparser", name = "javaparser-core", version = "3.25.10" }
-junit-console = { group = "org.junit.platform", name = "junit-platform-console", version = "1.10.2" }
-junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version = "5.10.2" }
+junit-console = { group = "org.junit.platform", name = "junit-platform-console", version = "1.11.0" }
+junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version = "5.11.0" }
+junit-launcher = { group = "org.junit.platform", name = "junit-platform-launcher", version = "1.11.0" }
+pmd = { group = "net.sourceforge.pmd", name = "pmd", version = "7.5.0" }
+turnkey = { group = "tools.aqua", name = "turnkey-support", version = "1.0.0" }

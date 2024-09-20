@@ -16,29 +16,23 @@
  * limitations under the License.
  */
 
-rootProject.name = "z3-turnkey"
+package tools.aqua.turnkey.z3;
 
-pluginManagement {
-  repositories {
-    gradlePluginPortal()
-    mavenCentral()
-  }
-}
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assumptions.assumeThat;
 
-plugins {
-  id("com.gradle.develocity") version "3.18.1"
-  id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
-}
+import com.microsoft.z3.Native;
+import org.junit.jupiter.api.Test;
 
-develocity {
-  buildScan {
-    val isCI = System.getenv("CI").isNullOrEmpty().not()
-    publishing.onlyIf { isCI }
-    if (isCI) {
-      tag("CI")
-      uploadInBackground = false
-      termsOfUseUrl = "https://gradle.com/help/legal-terms-of-use"
-      termsOfUseAgree = "yes"
-    }
+/** Test that Z3 native methods can successfully be invoked. */
+class Z3LoaderTest {
+
+  /** Invoke the {@link Native#getFullVersion} method from Z3. */
+  @Test
+  void testLoading() {
+    final String expectedVersion = System.getProperty("expectedZ3Version");
+    assumeThat(expectedVersion).isNotNull();
+
+    assertThat(Native.getFullVersion()).contains(expectedVersion);
   }
 }
