@@ -59,9 +59,9 @@ mechanism as the `tools.aqua.turnkey.z3` module.
 Z3 is licensed under the [MIT License](https://opensource.org/licenses/MIT). Two dependencies are
 introduced: the TurnKey support library is licensed under the
 [ISC License](https://opensource.org/licenses/ISC) and the JSpecify annotation library used by it is
-licensed under the [Apache Licence, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0).
+licensed under the [Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0).
 
 Tests and other non-runtime code are licensed under the
-[Apache Licence, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0). Standalone documentation
+[Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0). Standalone documentation
 is licensed under the
 [Creative Commons Attribution 4.0 International License](https://creativecommons.org/licenses/by/4.0/).
