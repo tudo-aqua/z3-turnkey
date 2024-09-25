@@ -35,7 +35,7 @@ versions = { id = "com.github.ben-manes.versions", version = "0.51.0" }
 assertj = { group = "org.assertj", name = "assertj-core", version = "3.26.3" }
 gradle-usePython = { group = "ru.vyarus", name = "gradle-use-python-plugin", version = "4.0.0" }
 junit-console = { group = "org.junit.platform", name = "junit-platform-console", version = "1.11.0" }
-junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version = "5.11.0" }
+junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version = "5.11.1" }
 junit-launcher = { group = "org.junit.platform", name = "junit-platform-launcher", version = "1.11.0" }
 pmd = { group = "net.sourceforge.pmd", name = "pmd", version = "7.5.0" }
 turnkey = { group = "tools.aqua", name = "turnkey-support", version = "1.0.0" }
