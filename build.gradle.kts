@@ -86,6 +86,7 @@ val testJar by configurations.registering { extendsFrom(configurations.testRunti
 dependencies {
   implementation(libs.turnkey)
 
+  testImplementation(platform(libs.junit))
   testImplementation(libs.assertj)
   testImplementation(libs.junit.jupiter)
   testRuntimeOnly(libs.junit.launcher)
