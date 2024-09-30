@@ -38,5 +38,5 @@ junit = { group = "org.junit", name = "junit-bom", version = "5.11.1" }
 junit-console = { group = "org.junit.platform", name = "junit-platform-console" }
 junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter" }
 junit-launcher = { group = "org.junit.platform", name = "junit-platform-launcher" }
-pmd = { group = "net.sourceforge.pmd", name = "pmd", version = "7.5.0" }
+pmd = { group = "net.sourceforge.pmd", name = "pmd", version = "7.6.0" }
 turnkey = { group = "tools.aqua", name = "turnkey-support", version = "1.0.0" }
