@@ -400,6 +400,10 @@ val extractWindowsAMD64 by
 
       from(zipTree(downloadWindowsAMD64.map { it.dest }))
       include("*/bin/*.dll")
+      exclude(
+          "**/Microsoft.Z3.dll", // .NET
+          "**/msvcp*.dll", // this should be bundled with Windows >= 10
+      )
       eachFile { path = name }
 
       into(layout.buildDirectory.dir("unpacked/windows-amd64"))
@@ -435,6 +439,10 @@ val extractWindowsX86 by
 
       from(zipTree(downloadWindowsX86.map { it.dest }))
       include("*/bin/*.dll")
+      exclude(
+          "**/Microsoft.Z3.dll", // .NET
+          "**/msvcp*.dll", // this should be bundled with Windows >= 10
+      )
       eachFile { path = name }
 
       into(layout.buildDirectory.dir("unpacked/windows-x86"))
