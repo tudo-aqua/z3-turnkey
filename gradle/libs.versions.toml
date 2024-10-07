@@ -34,7 +34,7 @@ versions = { id = "com.github.ben-manes.versions", version = "0.51.0" }
 
 assertj = { group = "org.assertj", name = "assertj-core", version = "3.26.3" }
 gradle-usePython = { group = "ru.vyarus", name = "gradle-use-python-plugin", version = "4.0.0" }
-junit = { group = "org.junit", name = "junit-bom", version = "5.11.1" }
+junit = { group = "org.junit", name = "junit-bom", version = "5.11.2" }
 junit-console = { group = "org.junit.platform", name = "junit-platform-console" }
 junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter" }
 junit-launcher = { group = "org.junit.platform", name = "junit-platform-launcher" }
