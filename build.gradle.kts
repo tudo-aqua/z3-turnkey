@@ -67,8 +67,8 @@ plugins {
 
 group = "tools.aqua"
 
-val z3Version = "4.13.0"
-val turnkeyVersion = "1"
+val z3Version = "4.13.3"
+val turnkeyVersion = ""
 
 version = if (turnkeyVersion.isNotBlank()) "$z3Version.$turnkeyVersion" else z3Version
 
@@ -283,7 +283,7 @@ val downloadLinuxAMD64 by
       description = "Download the Z3 binary distribution for Linux AMD64."
 
       src(
-          "https://github.com/Z3Prover/z3/releases/download/z3-$z3Version/z3-$z3Version-x64-glibc-2.31.zip")
+          "https://github.com/Z3Prover/z3/releases/download/z3-$z3Version/z3-$z3Version-x64-glibc-2.35.zip")
       dest(layout.buildDirectory.file("download/linux-amd64.zip"))
       overwrite(false)
       quiet(true)
@@ -318,7 +318,7 @@ val downloadMacOSAARCH64 by
       description = "Download the Z3 binary distribution for macOS AARCH64."
 
       src(
-          "https://github.com/Z3Prover/z3/releases/download/z3-$z3Version/z3-$z3Version-arm64-osx-11.0.zip")
+          "https://github.com/Z3Prover/z3/releases/download/z3-$z3Version/z3-$z3Version-arm64-osx-13.7.zip")
       dest(layout.buildDirectory.file("download/macos-aarch64.zip"))
       overwrite(false)
       quiet(true)
@@ -353,7 +353,7 @@ val downloadMacOSAMD64 by
       description = "Download the Z3 binary distribution for macOS AMD64."
 
       src(
-          "https://github.com/Z3Prover/z3/releases/download/z3-$z3Version/z3-$z3Version-x64-osx-11.7.10.zip")
+          "https://github.com/Z3Prover/z3/releases/download/z3-$z3Version/z3-$z3Version-x64-osx-13.7.zip")
       dest(layout.buildDirectory.file("download/macos-amd64.zip"))
       overwrite(false)
       quiet(true)
