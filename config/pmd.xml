@@ -25,7 +25,7 @@
   <description>Common ruleset</description>
 
   <rule ref="category/java/bestpractices.xml">
-    <exclude name="JUnitTestContainsTooManyAsserts" />
+    <exclude name="UnitTestContainsTooManyAsserts" />
     <exclude name="LiteralsFirstInComparisons" />
   </rule>
 
