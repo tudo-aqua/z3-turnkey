@@ -75,7 +75,7 @@ version = if (turnkeyVersion.isNotBlank()) "$z3Version.$turnkeyVersion" else z3V
 val testToolchains =
     listOf(8, 11, 17, 21).map { Triple("EclipseTemurin$it", it, ADOPTIUM) } +
         listOf(8, 11, 17, 21).map { Triple("AzulZulu$it", it, AZUL) } +
-        listOf(8, 11, 17, 21).map { Triple("BellsoftLiberica$it", it, BELLSOFT) } +
+        listOf(8, 17, 21).map { Triple("BellsoftLiberica$it", it, BELLSOFT) } +
         listOf(8, 11, 17, 21).map { Triple("GraalVM$it", it, GRAAL_VM) } +
         listOf(11, 17, 21).map { Triple("MicrosoftOpenJDK$it", it, MICROSOFT) }
 
