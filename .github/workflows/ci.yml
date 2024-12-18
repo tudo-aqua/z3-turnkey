@@ -97,11 +97,6 @@ jobs:
                          execute --fail-if-no-tests \
                                  --select-package tools.aqua.turnkey.z3 \
                                  --reports-dir test-results
-      - uses: mikepenz/action-junit-report@v5
-        if: always()
-        with:
-          require_tests: true
-          report_paths: "test-results/*.xml"
 
   dependency-submission:
     runs-on: ubuntu-latest
