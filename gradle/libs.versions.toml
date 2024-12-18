@@ -17,6 +17,7 @@
 [versions]
 
 prettier-toml = "2.0.1"
+prettier-xml = "3.4.1"
 
 [plugins]
 

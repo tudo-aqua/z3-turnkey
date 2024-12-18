@@ -166,6 +166,22 @@ spotless {
         .nodeExecutable(computeNodeExec(node, computeNodeDir(node)).get())
         .config(mapOf("parser" to "markdown", "printWidth" to 100, "proseWrap" to "always"))
   }
+  format("xml") {
+    target("config/**/*.xml")
+    licenseHeaderFile(project.file("config/license/Apache-2.0-xmlstyle"), "<((!DOCTYPE)|[A-Za-z]+)")
+        .skipLinesMatching("^<\\?xml.*\\?>$")
+        .updateYearWithLatest(true)
+    prettier(mapOf("@prettier/plugin-xml" to libs.versions.prettier.xml.get()))
+        .npmInstallCache()
+        .nodeExecutable(computeNodeExec(node, computeNodeDir(node)).get())
+        .config(
+            mapOf(
+                "plugins" to listOf("@prettier/plugin-xml"),
+                "parser" to "xml",
+                "printWidth" to 100,
+                "xmlQuoteAttributes" to "double",
+                "xmlWhitespaceSensitivity" to "ignore"))
+  }
   yaml {
     target("config/**/*.yml", ".github/**/*.yml", "CITATION.cff")
     licenseHeaderFile(project.file("config/license/Apache-2.0-hashmark"), "[A-Za-z-]+:")
