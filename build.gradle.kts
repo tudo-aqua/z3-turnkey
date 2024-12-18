@@ -67,8 +67,8 @@ plugins {
 
 group = "tools.aqua"
 
-val z3Version = "4.13.0"
-val turnkeyVersion = "1"
+val z3Version = "4.13.4"
+val turnkeyVersion = ""
 
 version = if (turnkeyVersion.isNotBlank()) "$z3Version.$turnkeyVersion" else z3Version
 
@@ -276,6 +276,41 @@ val rewriteNativeJava by
       outputDirectory = layout.buildDirectory.dir("generated/rewritten-native")
     }
 
+// Linux AARCH64
+
+val downloadLinuxAARCH64 by
+    tasks.registering(Download::class) {
+      description = "Download the Z3 binary distribution for Linux AARCH64."
+
+      src(
+          "https://github.com/Z3Prover/z3/releases/download/z3-$z3Version/z3-$z3Version-arm64-glibc-2.34.zip")
+      dest(layout.buildDirectory.file("download/linux-aarch64.zip"))
+      overwrite(false)
+      quiet(true)
+    }
+
+val extractLinuxAARCH64 by
+    tasks.registering(Copy::class) {
+      description = "Extract libraries from the Z3 binary distribution for Linux ARCH64."
+
+      from(zipTree(downloadLinuxAARCH64.map { it.dest }))
+      include("*/bin/*.so")
+      eachFile { path = name }
+
+      into(layout.buildDirectory.dir("unpacked/linux-aarch64"))
+    }
+
+val turnkeyLinuxAARCH64 by
+    tasks.registering(ELFTurnKeyTask::class) {
+      description = "Run the TurnKey packager for Linux AARCH64"
+      dependsOn(extractLinuxAARCH64)
+
+      libraries.from(fileTree(extractLinuxAARCH64.map { it.destinationDir })).filter { it.isFile }
+      rootLibraryNames.add("libz3java.so")
+      targetDirectory = layout.buildDirectory.dir("turnkey/linux-aarch64")
+      targetSubPath = "com/microsoft/z3/linux/aarch64"
+    }
+
 // Linux AMD64
 
 val downloadLinuxAMD64 by
@@ -283,7 +318,7 @@ val downloadLinuxAMD64 by
       description = "Download the Z3 binary distribution for Linux AMD64."
 
       src(
-          "https://github.com/Z3Prover/z3/releases/download/z3-$z3Version/z3-$z3Version-x64-glibc-2.31.zip")
+          "https://github.com/Z3Prover/z3/releases/download/z3-$z3Version/z3-$z3Version-x64-glibc-2.35.zip")
       dest(layout.buildDirectory.file("download/linux-amd64.zip"))
       overwrite(false)
       quiet(true)
@@ -318,7 +353,7 @@ val downloadMacOSAARCH64 by
       description = "Download the Z3 binary distribution for macOS AARCH64."
 
       src(
-          "https://github.com/Z3Prover/z3/releases/download/z3-$z3Version/z3-$z3Version-arm64-osx-11.0.zip")
+          "https://github.com/Z3Prover/z3/releases/download/z3-$z3Version/z3-$z3Version-arm64-osx-13.7.1.zip")
       dest(layout.buildDirectory.file("download/macos-aarch64.zip"))
       overwrite(false)
       quiet(true)
@@ -353,7 +388,7 @@ val downloadMacOSAMD64 by
       description = "Download the Z3 binary distribution for macOS AMD64."
 
       src(
-          "https://github.com/Z3Prover/z3/releases/download/z3-$z3Version/z3-$z3Version-x64-osx-11.7.10.zip")
+          "https://github.com/Z3Prover/z3/releases/download/z3-$z3Version/z3-$z3Version-x64-osx-13.7.1.zip")
       dest(layout.buildDirectory.file("download/macos-amd64.zip"))
       overwrite(false)
       quiet(true)
@@ -468,6 +503,7 @@ sourceSets {
           rewriteNativeJava.flatMap { it.outputDirectory })
     }
     resources {
+      srcDir(turnkeyLinuxAARCH64.flatMap { it.targetDirectory })
       srcDir(turnkeyLinuxAMD64.flatMap { it.targetDirectory })
       srcDir(turnkeyMacOSAARCH64.flatMap { it.targetDirectory })
       srcDir(turnkeyMacOSAMD64.flatMap { it.targetDirectory })
