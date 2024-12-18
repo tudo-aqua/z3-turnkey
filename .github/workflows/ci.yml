@@ -64,6 +64,10 @@ jobs:
             java-version: 11 # EOL
           - java-package: microsoft
             java-version: 8 # Does not exist
+          - os: macos-latest
+          - architecture: aarch64
+            java-package: temurin
+            java-version: 8 # Does not exist
       fail-fast: false # Ensure we get all failures on all affected platforms
 
     name: JUnit Test on ${{ matrix.os }} and ${{ matrix.java-package }} version ${{ matrix.java-version }} for ${{ matrix.architecture }}
