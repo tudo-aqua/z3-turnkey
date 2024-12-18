@@ -54,8 +54,12 @@ jobs:
         os: [macos-latest, ubuntu-latest, windows-latest]
         java-package: [liberica, microsoft, temurin, zulu]
         java-version: [8, 11, 17, 21]
-        architecture: [x64]
+        architecture: [x64, aarch64]
         exclude:
+          - os: ubuntu-latest
+            architecture: aarch64
+          - os: windows-latest
+            architecture: aarch64
           - java-package: liberica
             java-version: 11 # EOL
           - java-package: microsoft
@@ -79,24 +83,17 @@ jobs:
       - shell: bash
         run: |
           z3version="$(cat z3.version)"
-          prefix=""
-          if ! command -v arch &> /dev/null; then
-            case "${{ matrix.architecture }}" in
-              "aarch64") prefix="arch -arm64";;
-              "x64") prefix="arch -x86_64";;
-              *) echo "unknown architecture ${{ matrix.architecture }}"; exit 1;;
-            esac
-          fi
-          module_options=""
           if [ "${{ matrix.java-version }}" -gt 8 ]; then
             module_options="--add-opens java.base/java.io=ALL-UNNAMED"
+          else
+            module_options=""
           fi
-          ${prefix} java ${module_options} \
-                         -DexpectedZ3Version="${z3version}" \
-                         -jar z3-turnkey-*-test-runner.jar \
-                         execute --fail-if-no-tests \
-                                 --select-package tools.aqua.turnkey.z3 \
-                                 --reports-dir test-results
+          java ${module_options} \
+               -DexpectedZ3Version="${z3version}" \
+               -jar z3-turnkey-*-test-runner.jar \
+               execute --fail-if-no-tests \
+                       --select-package tools.aqua.turnkey.z3 \
+                       --reports-dir test-results
 
   dependency-submission:
     runs-on: ubuntu-latest
