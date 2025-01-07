@@ -1,7 +1,7 @@
 <!--
    SPDX-License-Identifier: CC-BY-4.0
 
-   Copyright 2019-2024 The TurnKey Authors
+   Copyright 2019-2025 The TurnKey Authors
 
    This work is licensed under the Creative Commons Attribution 4.0
    International License.
