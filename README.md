@@ -29,7 +29,7 @@ At the moment, platform support is as follows:
 
 | Operating System | x86 | AMD64 | AARCH64 |
 | ---------------- | :-: | :---: | :-----: |
-| Linux            |     |   ✓   |         |
+| Linux            |  ✓  |   ✓   |         |
 | macOS            |     |   ✓   |    ✓    |
 | Windows          |  ✓  |   ✓   |         |
 
