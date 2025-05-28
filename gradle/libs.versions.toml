@@ -26,7 +26,7 @@ moduleInfo = { id = "org.glavo.compile-module-info-plugin", version = "2.0" }
 nexusPublish = { id = "io.github.gradle-nexus.publish-plugin", version = "2.0.0" }
 node = { id = "com.github.node-gradle.node", version = "7.1.0" }
 spotbugs = { id = "com.github.spotbugs", version = "6.1.7" }
-spotless = { id = "com.diffplug.spotless", version = "7.0.2" }
+spotless = { id = "com.diffplug.spotless", version = "7.0.4" }
 taskTree = { id = "com.dorongold.task-tree", version = "4.0.1" }
 turnkey = { id = "tools.aqua.turnkey", version = "1.0.0" }
 versions = { id = "com.github.ben-manes.versions", version = "0.52.0" }
