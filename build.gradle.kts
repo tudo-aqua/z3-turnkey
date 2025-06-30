@@ -124,7 +124,10 @@ pmd {
 
 tasks.pmdMain { enabled = false }
 
-spotbugs { effort = MAX }
+spotbugs {
+  effort = MAX
+  useJavaToolchains = false
+}
 
 tasks.spotbugsMain { enabled = false }
 
