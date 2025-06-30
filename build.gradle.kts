@@ -55,8 +55,8 @@ plugins {
   signing
 
   alias(libs.plugins.download)
+  alias(libs.plugins.mavenPublish)
   alias(libs.plugins.moduleInfo)
-  alias(libs.plugins.nexusPublish)
   alias(libs.plugins.node)
   alias(libs.plugins.spotbugs)
   alias(libs.plugins.spotless)
@@ -544,8 +544,6 @@ tasks.assemble { dependsOn(sourcesJar) }
 java {
   toolchain { languageVersion = JavaLanguageVersion.of(8) }
   modularity.inferModulePath = false
-  withJavadocJar()
-  withSourcesJar()
 }
 
 val test by testing.suites.existing(JvmTestSuite::class)
@@ -613,38 +611,31 @@ val testRunner by
       manifest { attributes("Main-Class" to "org.junit.platform.console.ConsoleLauncher") }
     }
 
-val maven by
-    publishing.publications.register<MavenPublication>("maven") {
-      from(components["java"])
-      artifactId = "z3-turnkey"
-      pom {
-        name = "Z3-TurnKey"
-        description = "TurnKey artifact for Z3"
-        url = "https://github.com/tudo-aqua/z3-turnkey"
-        licenses {
-          license {
-            name = "The MIT License"
-            url = "https://opensource.org/licenses/MIT"
-          }
-        }
-        developers {
-          developer {
-            name = "Simon Dierl"
-            email = "simon.dierl@cs.tu-dortmund.de"
-          }
-        }
-        scm {
-          connection = "scm:git:git://github.com:tudo-aqua/z3-turnkey.git"
-          developerConnection = "scm:git:ssh://git@github.com:tudo-aqua/z3-turnkey.git"
-          url = "https://github.com/tudo-aqua/z3-turnkey/tree/main"
-        }
+mavenPublishing {
+  publishToMavenCentral()
+  signAllPublications()
+  pom {
+    name = "Z3-TurnKey"
+    description = "TurnKey artifact for Z3"
+    url = "https://github.com/tudo-aqua/z3-turnkey"
+    licenses {
+      license {
+        name = "The MIT License"
+        url = "https://opensource.org/licenses/MIT"
       }
     }
-
-signing {
-  setRequired { gradle.taskGraph.allTasks.any { it is PublishToMavenRepository } }
-  useGpgCmd()
-  sign(maven)
+    developers {
+      developer {
+        name = "Simon Dierl"
+        email = "simon.dierl@cs.tu-dortmund.de"
+      }
+    }
+    scm {
+      connection = "scm:git:git://github.com:tudo-aqua/z3-turnkey.git"
+      developerConnection = "scm:git:ssh://git@github.com:tudo-aqua/z3-turnkey.git"
+      url = "https://github.com/tudo-aqua/z3-turnkey/tree/main"
+    }
+  }
 }
 
-nexusPublishing { this.repositories { sonatype() } }
+signing { useGpgCmd() }
