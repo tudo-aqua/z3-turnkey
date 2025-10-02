@@ -37,7 +37,7 @@ jobs:
         with:
           distribution: temurin
           java-version: 17
-      - uses: gradle/actions/setup-gradle@v4
+      - uses: gradle/actions/setup-gradle@v5
       - run: |
           ./gradlew build testRunner versionFile
           cp build/z3.version build/libs/z3-turnkey-*-test-runner.jar .
@@ -107,4 +107,4 @@ jobs:
         with:
           distribution: temurin
           java-version: 17
-      - uses: gradle/actions/dependency-submission@v4
+      - uses: gradle/actions/dependency-submission@v5
