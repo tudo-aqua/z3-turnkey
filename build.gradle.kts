@@ -67,7 +67,7 @@ plugins {
 
 group = "tools.aqua"
 
-val z3Version = "4.14.1"
+val z3Version = "4.16.0"
 val turnkeyVersion = ""
 
 version = if (turnkeyVersion.isNotBlank()) "$z3Version.$turnkeyVersion" else z3Version
@@ -302,7 +302,7 @@ val downloadLinuxAARCH64 by
       description = "Download the Z3 binary distribution for Linux AARCH64."
 
       src(
-          "https://github.com/Z3Prover/z3/releases/download/z3-$z3Version/z3-$z3Version-arm64-glibc-2.34.zip")
+          "https://github.com/Z3Prover/z3/releases/download/z3-$z3Version/z3-$z3Version-arm64-glibc-2.38.zip")
       dest(layout.buildDirectory.file("download/linux-aarch64.zip"))
       overwrite(false)
       quiet(true)
@@ -337,7 +337,7 @@ val downloadLinuxAMD64 by
       description = "Download the Z3 binary distribution for Linux AMD64."
 
       src(
-          "https://github.com/Z3Prover/z3/releases/download/z3-$z3Version/z3-$z3Version-x64-glibc-2.35.zip")
+          "https://github.com/Z3Prover/z3/releases/download/z3-$z3Version/z3-$z3Version-x64-glibc-2.39.zip")
       dest(layout.buildDirectory.file("download/linux-amd64.zip"))
       overwrite(false)
       quiet(true)
@@ -372,7 +372,7 @@ val downloadMacOSAARCH64 by
       description = "Download the Z3 binary distribution for macOS AARCH64."
 
       src(
-          "https://github.com/Z3Prover/z3/releases/download/z3-$z3Version/z3-$z3Version-arm64-osx-13.7.4.zip")
+          "https://github.com/Z3Prover/z3/releases/download/z3-$z3Version/z3-$z3Version-arm64-osx-15.7.3.zip")
       dest(layout.buildDirectory.file("download/macos-aarch64.zip"))
       overwrite(false)
       quiet(true)
@@ -407,7 +407,7 @@ val downloadMacOSAMD64 by
       description = "Download the Z3 binary distribution for macOS AMD64."
 
       src(
-          "https://github.com/Z3Prover/z3/releases/download/z3-$z3Version/z3-$z3Version-x64-osx-13.7.4.zip")
+          "https://github.com/Z3Prover/z3/releases/download/z3-$z3Version/z3-$z3Version-x64-osx-15.7.3.zip")
       dest(layout.buildDirectory.file("download/macos-amd64.zip"))
       overwrite(false)
       quiet(true)
