@@ -39,7 +39,7 @@ jobs:
           java-version: 17
       - uses: gradle/actions/setup-gradle@v4
       - run: |
-          ./gradlew build testRunner versionFile
+          ./gradlew spotlessApply build testRunner versionFile
           cp build/z3.version build/libs/z3-turnkey-*-test-runner.jar .
       - uses: actions/upload-artifact@v4
         with:
@@ -56,6 +56,8 @@ jobs:
         java-version: [8, 11, 17, 21]
         architecture: [x64, aarch64]
         exclude:
+          - os: macos-latest
+            architecture: x64 # macos-latest is ARM only, no Intel macOS runners
           - os: ubuntu-latest
             architecture: aarch64
           - os: windows-latest
@@ -100,6 +102,7 @@ jobs:
                        --reports-dir test-results
 
   dependency-submission:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
