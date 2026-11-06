@@ -29,9 +29,12 @@ At the moment, platform support is as follows:
 
 | Operating System | x86 | AMD64 | AARCH64 |
 | ---------------- | :-: | :---: | :-----: |
-| Linux            |     |   ✓   |         |
+| Linux            |     |   ✓   |    ✓    |
 | macOS            |     |   ✓   |    ✓    |
-| Windows          |  ✓  |   ✓   |         |
+| Windows          |     |   ✓   |         |
+
+The Linux libraries of Z3 5.3.3 require glibc 2.39 (AMD64) and 2.38 (AARCH64), e.g., Ubuntu 24.04. Z3 5 does not
+release a Java binding for Windows x86 anymore.
 
 ## Usage
 
@@ -48,6 +51,10 @@ Gradle:
   [turnkey-gradle-plugin](https://github.com/tudo-aqua/turnkey-gradle-plugin).
 - Additionally, Python 3 is required for a code generation step and localized by the
   [gradle-use-python-plugin](https://github.com/xvik/gradle-use-python-plugin).
+- On macOS, `install_name_tool` must support `-delete_all_rpaths`: Apple's does not, LLVM's
+  `llvm-install-name-tool` does (e.g., from Homebrew's `llvm`, put on the `PATH` as `install_name_tool`).
+
+Local builds without a signing key: `./gradlew publishToMavenLocal -PnoSign`.
 
 ## Java and JPMS Support
 
