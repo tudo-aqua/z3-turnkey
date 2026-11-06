@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: Apache-2.0
  *
- * Copyright 2019-2025 The TurnKey Authors
+ * Copyright 2019-2026 The TurnKey Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,7 +67,7 @@ plugins {
 
 group = "tools.aqua"
 
-val z3Version = "4.14.1"
+val z3Version = "5.3.3"
 val turnkeyVersion = ""
 
 version = if (turnkeyVersion.isNotBlank()) "$z3Version.$turnkeyVersion" else z3Version
@@ -302,7 +302,7 @@ val downloadLinuxAARCH64 by
       description = "Download the Z3 binary distribution for Linux AARCH64."
 
       src(
-          "https://github.com/Z3Prover/z3/releases/download/z3-$z3Version/z3-$z3Version-arm64-glibc-2.34.zip")
+          "https://github.com/Z3Prover/z3/releases/download/z3-$z3Version/z3-$z3Version-arm64-glibc-2.38.zip")
       dest(layout.buildDirectory.file("download/linux-aarch64.zip"))
       overwrite(false)
       quiet(true)
@@ -337,7 +337,7 @@ val downloadLinuxAMD64 by
       description = "Download the Z3 binary distribution for Linux AMD64."
 
       src(
-          "https://github.com/Z3Prover/z3/releases/download/z3-$z3Version/z3-$z3Version-x64-glibc-2.35.zip")
+          "https://github.com/Z3Prover/z3/releases/download/z3-$z3Version/z3-$z3Version-x64-glibc-2.39.zip")
       dest(layout.buildDirectory.file("download/linux-amd64.zip"))
       overwrite(false)
       quiet(true)
@@ -372,7 +372,7 @@ val downloadMacOSAARCH64 by
       description = "Download the Z3 binary distribution for macOS AARCH64."
 
       src(
-          "https://github.com/Z3Prover/z3/releases/download/z3-$z3Version/z3-$z3Version-arm64-osx-13.7.4.zip")
+          "https://github.com/Z3Prover/z3/releases/download/z3-$z3Version/z3-$z3Version-arm64-osx-13.3.zip")
       dest(layout.buildDirectory.file("download/macos-aarch64.zip"))
       overwrite(false)
       quiet(true)
@@ -407,7 +407,7 @@ val downloadMacOSAMD64 by
       description = "Download the Z3 binary distribution for macOS AMD64."
 
       src(
-          "https://github.com/Z3Prover/z3/releases/download/z3-$z3Version/z3-$z3Version-x64-osx-13.7.4.zip")
+          "https://github.com/Z3Prover/z3/releases/download/z3-$z3Version/z3-$z3Version-x64-osx-13.3.zip")
       dest(layout.buildDirectory.file("download/macos-amd64.zip"))
       overwrite(false)
       quiet(true)
@@ -435,7 +435,7 @@ val turnkeyMacOSAMD64 by
       targetSubPath = "com/microsoft/z3/osx/amd64"
     }
 
-// Windows AMD64
+// Windows AMD64 (the Java binding is z3java.dll since Z3 5, libz3java.dll before)
 
 val downloadWindowsAMD64 by
     tasks.registering(Download::class) {
@@ -469,48 +469,9 @@ val turnkeyWindowsAMD64 by
       dependsOn(extractWindowsAMD64)
 
       libraries.from(fileTree(extractWindowsAMD64.map { it.destinationDir })).filter { it.isFile }
-      rootLibraryNames.add("libz3java.dll")
+      rootLibraryNames.add("z3java.dll")
       targetDirectory = layout.buildDirectory.dir("turnkey/windows-amd64")
       targetSubPath = "com/microsoft/z3/windows/amd64"
-    }
-
-// Windows x86
-
-val downloadWindowsX86 by
-    tasks.registering(Download::class) {
-      description = "Download the Z3 binary distribution for Windows x86."
-
-      src(
-          "https://github.com/Z3Prover/z3/releases/download/z3-$z3Version/z3-$z3Version-x86-win.zip")
-      dest(layout.buildDirectory.file("download/windows-x86.zip"))
-      overwrite(false)
-      quiet(true)
-    }
-
-val extractWindowsX86 by
-    tasks.registering(Copy::class) {
-      description = "Extract libraries from the Z3 binary distribution for Windows x86."
-
-      from(zipTree(downloadWindowsX86.map { it.dest }))
-      include("*/bin/*.dll")
-      exclude(
-          "**/Microsoft.Z3.dll", // .NET
-          "**/msvcp*.dll", // this should be bundled with Windows >= 10
-      )
-      eachFile { path = name }
-
-      into(layout.buildDirectory.dir("unpacked/windows-x86"))
-    }
-
-val turnkeyWindowsX86 by
-    tasks.registering(COFFTurnKeyTask::class) {
-      description = "Run the TurnKey packager for Windows x86"
-      dependsOn(extractWindowsX86)
-
-      libraries.from(fileTree(extractWindowsX86.map { it.destinationDir })).filter { it.isFile }
-      rootLibraryNames.add("libz3java.dll")
-      targetDirectory = layout.buildDirectory.dir("turnkey/windows-x86")
-      targetSubPath = "com/microsoft/z3/windows/x86"
     }
 
 sourceSets {
@@ -527,7 +488,6 @@ sourceSets {
       srcDir(turnkeyMacOSAARCH64.flatMap { it.targetDirectory })
       srcDir(turnkeyMacOSAMD64.flatMap { it.targetDirectory })
       srcDir(turnkeyWindowsAMD64.flatMap { it.targetDirectory })
-      srcDir(turnkeyWindowsX86.flatMap { it.targetDirectory })
     }
   }
 }
@@ -613,7 +573,8 @@ val testRunner by
 
 mavenPublishing {
   publishToMavenCentral()
-  signAllPublications()
+  // local builds without a key: -PnoSign
+  if (!project.hasProperty("noSign")) signAllPublications()
   pom {
     name = "Z3-TurnKey"
     description = "TurnKey artifact for Z3"
