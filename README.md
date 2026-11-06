@@ -1,7 +1,7 @@
 <!--
    SPDX-License-Identifier: CC-BY-4.0
 
-   Copyright 2019-2025 The TurnKey Authors
+   Copyright 2019-2026 The TurnKey Authors
 
    This work is licensed under the Creative Commons Attribution 4.0
    International License.
@@ -33,8 +33,8 @@ At the moment, platform support is as follows:
 | macOS            |     |   ✓   |    ✓    |
 | Windows          |     |   ✓   |         |
 
-The Linux libraries of Z3 5.3.3 require glibc 2.39 (AMD64) and 2.38 (AARCH64), e.g., Ubuntu 24.04. Z3 5 does not
-release a Java binding for Windows x86 anymore.
+The Linux libraries of Z3 5.3.3 require glibc 2.39 (AMD64) and 2.38 (AARCH64), e.g., Ubuntu 24.04.
+Z3 5 does not release a Java binding for Windows x86 anymore.
 
 ## Usage
 
@@ -52,7 +52,8 @@ Gradle:
 - Additionally, Python 3 is required for a code generation step and localized by the
   [gradle-use-python-plugin](https://github.com/xvik/gradle-use-python-plugin).
 - On macOS, `install_name_tool` must support `-delete_all_rpaths`: Apple's does not, LLVM's
-  `llvm-install-name-tool` does (e.g., from Homebrew's `llvm`, put on the `PATH` as `install_name_tool`).
+  `llvm-install-name-tool` does (e.g., from Homebrew's `llvm`, put on the `PATH` as
+  `install_name_tool`).
 
 Local builds without a signing key: `./gradlew publishToMavenLocal -PnoSign`.
 
